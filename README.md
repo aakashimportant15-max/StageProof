@@ -1,128 +1,458 @@
-# StageProof
+<div align="center">
+
+# StageProof — AI-Powered Cyber-Physical Integrity for Flood Early Warning Systems
 
 **Verify the reading before you sound the alarm.**
 
-StageProof — AI-Powered Cyber-Physical Integrity for Flood Early Warning Systems.
-An integrity layer between river-level sensors and the decisions made from them: it
-checks whether a gauge reading is authentic as a message, plausible as a sensor
-output, and consistent with the rest of the river system before it can drive a warning.
+<img src="https://readme-typing-svg.demolab.com?font=Inter&weight=600&size=21&duration=3000&pause=900&color=2563EB&center=true&vCenter=true&width=900&lines=Verify+the+reading+before+you+sound+the+alarm.;Detect+false+alarms+before+they+become+warnings.;Protect+against+suppressed+flood+signals.;Evidence+first.+Decision+second.+Action+last." alt="StageProof animated tagline" />
 
-> **Hackathon prototype.** All data is replayed or simulated. Not an operational
-> warning system. Nothing is deployed, certified or guaranteed. See
-> `docs/PRD.md` §11 and `docs/FINAL_VALIDATION.md` for limitations.
+<br/>
 
-## The problem
+[![Python](https://img.shields.io/badge/Python-3.11%2B-2563EB?logo=python&logoColor=white)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Security](https://img.shields.io/badge/Security-HMAC--SHA256-2563EB)](#security-and-audit)
+[![Audit](https://img.shields.io/badge/Audit-SHA--256%20Hash%20Chain-2563EB)](#security-and-audit)
+[![Tests](https://img.shields.io/badge/Tests-259%20Passing-16A34A)](#validation)
+[![Status](https://img.shields.io/badge/Status-Hackathon%20Prototype-F59E0B)](#limitations)
 
-A warning system can trust a gauge reading without checking that it makes physical
-sense. That creates two opposite risks: a **false alarm** from a fabricated or faulty
-high reading, and a **missed warning** from a suppressed low reading. Message
-authentication alone does not close the gap — a compromised sensor produces correctly
-signed lies. The river obeys physics, so upstream flow and rainfall constrain what the
-gauge can plausibly read. StageProof uses that as a second line of defense.
+</div>
 
-## How it works
+---
 
-Every reading passes an ordered pipeline; each stage only sees what the previous one
-accepted:
+## 🎯 What is StageProof?
 
-1. **Transport security** — each packet is HMAC-SHA256 signed by its station key.
-   Unsigned, altered, replayed or stale packets are rejected, recorded as evidence,
-   and never used as observations.
-2. **Model expectation (AI/ML role)** — a RidgeCV regression, fitted offline on the
-   reach's historical record, predicts what gauge B should read from upstream and
-   tributary discharge (rating-converted) plus rainfall. The model supplies an
-   expected value only; every decision is a transparent rule, not a black-box
-   classifier.
-3. **Evidence** — the reading is compared with the prediction (PHANTOM / SUPPRESSED /
-   CONSISTENT), its sensor shape is checked (stuck, spike, dropout, noise) and replay
-   and drift patterns are flagged.
-4. **Verdict & persistence** — NORMAL, REAL_FLOOD, SENSOR_FAULT, POSSIBLE_CYBER_ATTACK
-   or UNCERTAIN must persist for a configured number of consecutive ticks before it is
-   committed, so verdicts do not flip-flop.
-5. **Response** — suspect sensors are quarantined; a quarantined gauge is replaced by a
-   clearly labeled **estimate** built from trusted inputs, with an uncertainty interval
-   and confidence. Public warnings from unverified data are blocked; high-impact
-   actions (releasing an attack quarantine, evacuation recommendations) are human-only.
-6. **Audit integrity** — every consequential event is appended to a SHA-256
-   hash-chained JSONL log. Any later edit, deletion or reordering breaks the chain and
-   is detected; tamper demonstrations run on copies, never the live log.
+**StageProof — AI-Powered Cyber-Physical Integrity for Flood Early Warning Systems** is an integrity layer between river-level sensors and the decisions made from them.
 
-Community verification (simulated volunteers replying to an SMS/IVR prompt) can help
-resolve an UNCERTAIN window when telemetry is missing — one reply is never enough, and
-community input can never override a hard failure.
+Instead of blindly trusting an extreme gauge reading, StageProof asks:
 
-## Scenarios
+> **Is the message authentic? Is the sensor behavior plausible? Does the reading agree with the rest of the river system?**
 
-Six replayed scenarios are included (`data/scenarios/`); each manifest states its own
-expected outcome and is machine-checked after a run:
+Only then can the reading influence a warning decision.
 
-| ID | What happens | Intended behavior |
+This creates a second line of defense against both:
+
+- 🚨 **False alarms** — fabricated or faulty high readings.
+- ⚠️ **Missed warnings** — suppressed or manipulated low readings.
+- 🔐 **Transport attacks** — unsigned, altered, stale, or replayed packets.
+
+> **Hackathon prototype:** all data is replayed or simulated. This is **not an operational warning system** and is not deployed, certified, or guaranteed.
+
+---
+
+## 🧠 The Core Idea
+
+```text
+                    ┌──────────────────┐
+                    │ Rainfall / Context│
+                    └────────┬─────────┘
+                             │
+        ┌────────────────────┼────────────────────┐
+        ▼                    ▼                    ▼
+   Upstream A          Tributary T           Target B
+        │                    │               observed
+        └────────────┬───────┘                    │
+                     ▼                            │
+              ┌──────────────┐                    │
+              │ AI Expectation│◄───────────────────┘
+              │ Ridge model   │
+              └──────┬───────┘
+                     ▼
+              ┌──────────────┐
+              │ Evidence     │
+              │ + Physics    │
+              │ + Security   │
+              └──────┬───────┘
+                     ▼
+        ┌──────────────────────────────┐
+        │ Decision + Persistence Layer │
+        └──────────────┬───────────────┘
+                       ▼
+       NORMAL / REAL_FLOOD / SENSOR_FAULT
+       POSSIBLE_CYBER_ATTACK / UNCERTAIN
+                       │
+                       ▼
+              Response + Audit
+```
+
+**Key principle:**
+
+> **A valid signature proves who sent a message — not whether the reading is true.**
+
+A compromised sensor can send a correctly signed lie. StageProof therefore combines transport integrity with physical/contextual evidence.
+
+---
+
+# 🖼️ Dashboard Gallery
+
+The repository includes seven captured dashboard views from the real Streamlit application.
+
+## 1. Live Operations — Landing
+
+![StageProof Dashboard — Landing](https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_landing.png)
+
+**Direct image URL:**  
+https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_landing.png
+
+---
+
+## 2. Scenario A — Real Flood
+
+![StageProof — Scenario A Real Flood](https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_A_real_flood.png)
+
+**Direct image URL:**  
+https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_A_real_flood.png
+
+Scenario A demonstrates a corroborated flood where upstream, tributary, rainfall and target behavior support the event.
+
+---
+
+## 3. Scenario C — Fabricated Flood / Cyber Attack
+
+![StageProof — Fabricated Flood Attack](https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_C_fabricated_attack.png)
+
+**Direct image URL:**  
+https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_C_fabricated_attack.png
+
+The target gauge reports an extreme flood, but trusted upstream/context evidence does not support it. The reading is quarantined and the system blocks escalation beyond the appropriate warning level.
+
+---
+
+## 4. Scenario C — Incident & Evidence
+
+![StageProof — Incident and Evidence](https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_C_incident_evidence.png)
+
+**Direct image URL:**  
+https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_C_incident_evidence.png
+
+The evidence view exposes the reasoning behind the verdict rather than hiding it inside an opaque classifier.
+
+---
+
+## 5. Scenario C — Proof & Audit
+
+![StageProof — Proof and Audit](https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_C_proof_audit.png)
+
+**Direct image URL:**  
+https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_C_proof_audit.png
+
+Signed packet inspection, replay/security evidence, and the tamper-evident audit chain are surfaced in the proof layer.
+
+---
+
+## 6. Scenario D — Suppressed Flood
+
+![StageProof — Suppressed Flood](https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_D_suppressed_flood.png)
+
+**Direct image URL:**  
+https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_D_suppressed_flood.png
+
+This is the opposite failure mode: a real flood is hidden by a manipulated target reading. StageProof quarantines the compromised gauge and uses a clearly labelled fallback **estimate** from trusted evidence.
+
+---
+
+## 7. Scenario F — Replay / Transport Security
+
+![StageProof — Replay Security](https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_F_replay_security.png)
+
+**Direct image URL:**  
+https://raw.githubusercontent.com/aakashimportant15-max/StageProof/main/scr/dashboard_F_replay_security.png
+
+Unsigned or replayed packets are rejected before they can become observations used by the decision pipeline.
+
+---
+
+# ⚙️ How It Works
+
+Every reading passes through an ordered pipeline:
+
+### 1. Transport Security
+
+Each packet is authenticated using **HMAC-SHA256** and checked for:
+
+- signature validity
+- station binding
+- timestamp freshness
+- timestamp monotonicity
+- sequence/replay violations
+
+Rejected packets are preserved as security evidence and never become trusted observations.
+
+### 2. AI/ML Model Expectation
+
+A lightweight **Ridge regression** model is fitted offline on the river reach history.
+
+It estimates the expected target behavior from trusted upstream/tributary flow and rainfall context.
+
+The model provides an **expected value and residual evidence**. It does not directly decide the final verdict.
+
+### 3. Evidence Layer
+
+The observed reading is compared against expected behavior and classified into contextual evidence such as:
+
+- `CONSISTENT`
+- `PHANTOM`
+- `SUPPRESSED`
+- `AMBIGUOUS`
+- `INSUFFICIENT`
+
+Sensor-shape checks also detect:
+
+- stuck readings
+- spikes
+- dropouts
+- excessive noise
+- drift
+- range violations
+
+### 4. Decision + Persistence
+
+The engine can commit:
+
+```text
+NORMAL
+REAL_FLOOD
+SENSOR_FAULT
+POSSIBLE_CYBER_ATTACK
+UNCERTAIN
+```
+
+Persistence/hysteresis prevents noisy one-tick changes from becoming unstable operational decisions.
+
+### 5. Response
+
+When a sensor becomes untrusted:
+
+```text
+TRUSTED → SUSPECT → QUARANTINED → RECOVERING → TRUSTED
+```
+
+A quarantined target can be replaced by a clearly labelled **ESTIMATE** generated from trusted inputs, including an uncertainty interval and confidence.
+
+High-impact actions remain human-controlled.
+
+### 6. Audit Integrity
+
+Consequential events are appended to a **SHA-256 hash-chained JSONL audit log**.
+
+If an event is edited, deleted, or reordered, chain verification detects the break.
+
+Tamper demonstrations operate on copies rather than mutating the live audit record.
+
+---
+
+# 🧪 Six Security & Integrity Scenarios
+
+| ID | Scenario | Intended behavior |
 |---|---|---|
-| A | Real flood — everything agrees | REAL_FLOOD committed; warning provisional → confirmed; no fault/attack commit |
-| B | Sensor fault — gauge B gets stuck | SENSOR_FAULT; B quarantined; estimate in use |
-| C | Fabricated flood — valid key, no physical support | POSSIBLE_CYBER_ATTACK/FABRICATED; B quarantined; alert never above WATCH; no public warning |
-| D | Suppressed flood — valid key, real flood hidden | POSSIBLE_CYBER_ATTACK/SUPPRESSION; B quarantined; provisional warning from the ESTIMATE |
-| E | Uncertain — upstream telemetry lost during a rise | UNCERTAIN; community verification; no automatic warning from a low-confidence estimate |
-| F | Unsigned & replayed packets — transport attack | Packets rejected; security response; B quarantined; no public warning |
+| **A** | Real flood — everything agrees | `REAL_FLOOD`; warning progresses toward confirmation |
+| **B** | Sensor fault — gauge B gets stuck | `SENSOR_FAULT`; B quarantined; estimate in use |
+| **C** | Fabricated flood — valid key, no physical support | `POSSIBLE_CYBER_ATTACK / FABRICATED`; B quarantined; no public warning |
+| **D** | Suppressed flood — valid key, real flood hidden | `POSSIBLE_CYBER_ATTACK / SUPPRESSION`; B quarantined; estimate-based warning |
+| **E** | Uncertain — upstream telemetry lost during a rise | `UNCERTAIN`; community verification; no low-confidence automatic warning |
+| **F** | Unsigned & replayed packets | Packets rejected; security response; B quarantined |
 
-Current acceptance status per scenario (including known gaps in A and D) is recorded in
-`docs/FINAL_VALIDATION.md` — this project does not claim all six scenarios meet every
-one of their acceptance checks.
+Scenario manifests live in:
 
-## Quick start
-
-```bash
-pip install -e .[data,dev]
-make data        # one-time download + alignment (the only network-using step)
-make fit         # rating curves + Ridge integrity model -> artifacts/model.json
-make scenarios   # write scenario manifests A-F
-make test
-make demo        # streamlit dashboard
+```text
+data/scenarios/
 ```
 
-No `make` on your machine? Run the underlying commands directly (see `Makefile`).
+and are machine-checked after replay.
 
-## Running a scenario (CLI)
+> The final validation report documents known acceptance/timing gaps; StageProof does **not** claim that every scenario passes every acceptance check.
 
-```bash
-python scripts/run_scenario.py --scenario C
-python scripts/run_scenario.py --scenario C --explain 250    # per-tick reasoning
-python scripts/run_scenario.py --scenario F --export out/    # per-tick JSONL dump
+---
+
+# 🔐 Security & Audit
+
+StageProof intentionally separates **message authenticity** from **physical truth**.
+
+### Transport
+
+```text
+Sensor packet
+     │
+     ├── HMAC valid? ────────► continue
+     ├── station valid? ─────► continue
+     ├── timestamp valid? ───► continue
+     └── sequence valid? ────► continue
 ```
 
-The CLI replays the scenario through the real engine, prints each committed verdict /
-alert transition / action, verifies the audit chain (including a tamper check on a
-copy), then evaluates the manifest's expectations and prints PASS/FAIL per check. Exit
-code is 0 only when every expectation passes.
+A failure produces security evidence and prevents the packet from entering the trusted observation path.
 
-## Running the dashboard
+### Audit
+
+```text
+Event N-1 ──hash──► Event N ──hash──► Event N+1
+                         │
+                         └── tampering breaks verification
+```
+
+The audit verifier reports the first broken chain position.
+
+---
+
+# 🖥️ Dashboard
+
+Run the Streamlit dashboard with:
 
 ```bash
 python -m streamlit run dashboard/app.py
 ```
 
-(equivalent to `make demo`.) The dashboard drives the same engine as the CLI over a
-replay of the selected scenario. Sidebar: scenario selector, play/pause, +1 tick, jump
-to next event, run to end, speed, reveal-ground-truth and autopilot toggles. Three
-tabs: **Live operations** (KPIs, chart, why-panel, sensor trust, action log, phone
-simulator), **Incident & evidence** (tick-by-tick checklist), **Proof & audit**
-(signed-packet inspector with tamper re-checks on copies, live chain verification,
-audit-copy tamper demonstration, automatic scenario checks). Everything shown is
-simulated and offline; ground truth stays behind an evaluation toggle that StageProof
-itself never reads.
+The dashboard uses the same underlying engine as the CLI replay.
 
-## Tests
+### Live Operations
+
+- scenario selector
+- play/pause
+- tick stepping
+- event jumping
+- playback speed
+- verdict and alert KPIs
+- observed vs expected behavior
+- sensor trust state
+- action timeline
+- simulated community/officer interaction
+
+### Incident & Evidence
+
+- incident selection
+- verdict/subtype/confidence
+- candidate → committed persistence
+- evidence checklist
+- observed vs expected
+- residual/z-score evidence
+- fallback estimate
+- actions and audit references
+
+### Proof & Audit
+
+- signed packet inspector
+- signature/replay evidence
+- audit-chain verification
+- tamper-a-copy demonstration
+- scenario evaluation results
+
+---
+
+# 🚀 Quick Start
+
+```bash
+pip install -e .[data,dev]
+
+make data
+make fit
+make scenarios
+make test
+make demo
+```
+
+`make data` is the one-time network-using preparation step. The demo itself is designed for offline replay.
+
+### CLI replay
+
+```bash
+python scripts/run_scenario.py --scenario C
+python scripts/run_scenario.py --scenario C --explain 250
+python scripts/run_scenario.py --scenario F --export out/
+```
+
+The CLI replays the real engine, prints committed verdicts/actions, verifies the audit chain, performs a tamper check on a copy, and evaluates the scenario manifest.
+
+### Tests
 
 ```bash
 python -m pytest -q
 ```
 
-covers transport security, the model pipeline, evidence and decision rules,
-persistence, quarantine isolation, estimator fallback, scenario golden runs,
-determinism, no-future-leakage, community verification and the audit chain.
+---
 
-## Documentation
+# 📊 Validation
 
-`docs/PRD.md` (scope) · `docs/RULES.md` (behavior) · `docs/ARCHITECTURE.md` (structure)
-· `docs/DESIGN.md` (UI) · `docs/DEMO.md` (demo script) · `docs/TASKS.md` (plan) ·
-`docs/FINAL_VALIDATION.md` (final test/run results) · `docs/MEMORY.md` (context).
+The final hardened repository reports:
+
+- **259 tests passing**
+- transport security coverage
+- model/evidence pipeline coverage
+- decision and persistence coverage
+- quarantine isolation
+- estimator fallback
+- scenario golden runs
+- determinism checks
+- no-future-leakage checks
+- community verification
+- audit-chain integrity
+- dashboard runtime validation
+
+Detailed results and known limitations:
+
+```text
+docs/FINAL_VALIDATION.md
+```
+
+---
+
+# 🗂️ Project Structure
+
+```text
+StageProof/
+├── artifacts/       # fitted model + validation artifacts
+├── config/          # thresholds, policy, messages, reach configuration
+├── dashboard/       # Streamlit UI
+├── data/            # prepared data + scenario manifests
+├── docs/             # PRD, architecture, rules, design, demo, validation
+├── scr/              # captured dashboard screenshots
+├── scripts/          # data preparation, fitting, evaluation, replay
+├── stageproof/       # core integrity engine
+│   ├── security/     # HMAC transport + audit chain
+│   └── sim/          # deterministic scenario simulation
+├── tests/             # automated tests
+├── Makefile
+├── pyproject.toml
+└── README.md
+```
+
+---
+
+# 📚 Documentation
+
+- [`docs/PRD.md`](docs/PRD.md) — product scope
+- [`docs/RULES.md`](docs/RULES.md) — decision and safety rules
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — system structure
+- [`docs/DESIGN.md`](docs/DESIGN.md) — dashboard/UI design
+- [`docs/DEMO.md`](docs/DEMO.md) — demo walkthrough
+- [`docs/TASKS.md`](docs/TASKS.md) — implementation plan
+- [`docs/FINAL_VALIDATION.md`](docs/FINAL_VALIDATION.md) — final validation and known gaps
+- [`docs/MEMORY.md`](docs/MEMORY.md) — project context
+
+---
+
+# ⚠️ Limitations
+
+StageProof is a **hackathon prototype**, not an operational flood-warning system.
+
+It:
+
+- does not automatically evacuate communities
+- does not automatically release quarantined sensors
+- does not claim perfect cyber attribution
+- does not treat a valid signature as proof of truthful data
+- does not use future data at runtime
+- does not use an LLM in the safety-critical decision path
+- does not claim that all scenario acceptance checks pass
+- uses simulated/replayed data for demonstration
+
+The system is designed to make its uncertainty and evidence visible rather than hide them behind a single confidence number.
+
+---
+
+<div align="center">
+
+## StageProof
+
+**Verify the reading before you sound the alarm.**
+
+Built as a hackathon prototype for demonstrating cyber-physical integrity in flood early-warning workflows.
+
+</div>
