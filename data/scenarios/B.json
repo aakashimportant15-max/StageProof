@@ -1,0 +1,64 @@
+{
+  "compromised_keys": [],
+  "corruptions": [
+    {
+      "end_tick": 219,
+      "params": {},
+      "role": "B",
+      "start_tick": 204,
+      "type": "STUCK"
+    }
+  ],
+  "description": "B freezes for 16 ticks on the rising limb of a real flood, below action stage. Engine must commit SENSOR_FAULT/STUCK, quarantine B, open a maintenance ticket, and never warn the public.",
+  "event_start_tick": 196,
+  "expected": {
+    "actions": {
+      "must_include": [
+        "OPEN_MAINTENANCE_TICKET"
+      ],
+      "must_not_include": [
+        "SEND_PUBLIC_WARNING",
+        "RAISE_SECURITY_ALERT"
+      ]
+    },
+    "alert": {
+      "must_not_exceed": "WATCH"
+    },
+    "baselines": {
+      "threshold_alarm": "expected_false"
+    },
+    "committed": [
+      {
+        "from_tick": 208,
+        "label": "SENSOR_FAULT",
+        "subtype": "STUCK",
+        "to_tick": 216,
+        "tolerance_ticks": 2
+      }
+    ],
+    "sensor": [
+      {
+        "by_tick": 228,
+        "role": "B",
+        "state": "QUARANTINED"
+      }
+    ]
+  },
+  "feed_outages": [],
+  "ground_truth": {
+    "label": "REAL_FLOOD",
+    "subtype": "SENSOR_FAULT/STUCK",
+    "truth_notable": true
+  },
+  "id": "B",
+  "operator_script": [],
+  "seed": 202,
+  "title": "Stuck sensor while the river rises (2024-01 event)",
+  "transport_attacks": [],
+  "volunteer_script": [],
+  "warmup_ticks": 196,
+  "window": {
+    "end": "2024-01-10T09:00:00+00:00",
+    "start": "2024-01-09T23:00:00+00:00"
+  }
+}

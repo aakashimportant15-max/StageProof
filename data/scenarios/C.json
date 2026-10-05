@@ -1,0 +1,72 @@
+{
+  "compromised_keys": [
+    "B"
+  ],
+  "corruptions": [
+    {
+      "end_tick": 259,
+      "params": {
+        "decline_hours": 8,
+        "hold_hours": 2,
+        "peak_stage": 18.0,
+        "rise_hours": 6
+      },
+      "role": "B",
+      "start_tick": 196,
+      "type": "FABRICATED_RAMP"
+    }
+  ],
+  "description": "Attacker holding B's key fabricates a flood ramp to 18.0 ft during a rain-free, flat-upstream stretch. All signatures verify; physics must not. Engine must commit ATTACK/FABRICATED, quarantine, preserve evidence, and never warn the public.",
+  "event_start_tick": 196,
+  "expected": {
+    "actions": {
+      "must_include": [
+        "RAISE_SECURITY_ALERT",
+        "PRESERVE_EVIDENCE",
+        "QUARANTINE_SENSOR"
+      ],
+      "must_not_include": [
+        "SEND_PUBLIC_WARNING"
+      ]
+    },
+    "alert": {
+      "must_not_exceed": "WATCH"
+    },
+    "baselines": {
+      "threshold_alarm": "expected_true"
+    },
+    "committed": [
+      {
+        "from_tick": 214,
+        "label": "POSSIBLE_CYBER_ATTACK",
+        "subtype": "FABRICATED",
+        "to_tick": 279,
+        "tolerance_ticks": 2
+      }
+    ],
+    "sensor": [
+      {
+        "by_tick": 272,
+        "role": "B",
+        "state": "QUARANTINED"
+      }
+    ]
+  },
+  "feed_outages": [],
+  "ground_truth": {
+    "label": "NORMAL",
+    "subtype": null,
+    "truth_notable": false
+  },
+  "id": "C",
+  "operator_script": [],
+  "seed": 303,
+  "title": "Fabricated flood from a compromised key, dry period",
+  "transport_attacks": [],
+  "volunteer_script": [],
+  "warmup_ticks": 196,
+  "window": {
+    "end": "2024-10-07T11:00:00+00:00",
+    "start": "2024-10-06T10:00:00+00:00"
+  }
+}

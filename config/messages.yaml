@@ -1,0 +1,109 @@
+# config/messages.yaml — wording owned by DESIGN.md §9.3; reason texts from RULES.md Appendix A.
+# No generated text anywhere; render() only substitutes fields.
+
+templates:
+  public_watch:
+    en: "River level near {station} may be rising. Stay alert and follow local updates."
+    hi: "{station} के पास नदी का जलस्तर बढ़ सकता है। सतर्क रहें और स्थानीय सूचनाओं पर ध्यान दें।"
+  warning_provisional:
+    en: "FLOOD WARNING (provisional): the river at {station} is above the warning level ({level}). Basis: {basis}. Stay away from the river bank and low-lying areas. Follow instructions from local authorities."
+    hi: "बाढ़ चेतावनी (अस्थायी): {station} पर नदी का जलस्तर चेतावनी स्तर ({level}) से ऊपर है। आधार: {basis}। नदी किनारे और निचले इलाकों से दूर रहें। स्थानीय प्रशासन के निर्देशों का पालन करें।"
+  warning_confirmed:
+    en: "FLOOD WARNING (confirmed): the river at {station} remains above the warning level ({level}). Basis: {basis}. Follow instructions from local authorities."
+    hi: "बाढ़ चेतावनी (पुष्ट): {station} पर नदी का जलस्तर चेतावनी स्तर ({level}) से ऊपर बना हुआ है। आधार: {basis}। स्थानीय प्रशासन के निर्देशों का पालन करें।"
+  correction:
+    en: "UPDATE: the earlier river alert for {station} was based on an unreliable reading and is withdrawn. Current status: {status}."
+    hi: "अपडेट: {station} के लिए पहले भेजी गई नदी चेतावनी एक अविश्वसनीय रीडिंग पर आधारित थी और वापस ली जाती है। वर्तमान स्थिति: {status}।"
+  all_clear:
+    en: "ALL CLEAR: the river level at {station} is back below the warning level."
+    hi: "स्थिति सामान्य: {station} पर नदी का जलस्तर चेतावनी स्तर से नीचे लौट आया है।"
+  volunteer_prompt:
+    en: "Please check the river at {station}. Is the water above the red mark? Reply 1 = Yes, 2 = No, 3 = Not sure."
+    hi: "कृपया {station} पर नदी देखें। क्या पानी लाल निशान से ऊपर है? उत्तर दें: 1 = हाँ, 2 = नहीं, 3 = पता नहीं।"
+  volunteer_thanks:
+    en: "Thank you. Your reply was recorded."
+    hi: "धन्यवाद। आपका उत्तर दर्ज कर लिया गया है।"
+
+  # Basis phrases (DESIGN §9.3)
+  basis_observed:
+    en: "verified river-gauge readings"
+    hi: "सत्यापित नदी-गेज रीडिंग"
+  basis_estimate:
+    en: "an estimate from upstream gauges and rainfall"
+    hi: "ऊपरी गेज और वर्षा से लगाया गया अनुमान"
+  basis_community:
+    en: "reports from local volunteers"
+    hi: "स्थानीय स्वयंसेवकों की रिपोर्ट"
+  basis_downstream:
+    en: "gauge readings confirmed by the downstream gauge"
+    hi: "निचले गेज द्वारा पुष्ट गेज रीडिंग"
+
+  # Officer/ticket messages (English only, DESIGN §9.3)
+  officer_uncertain:
+    en: "Reading at {station} cannot be verified ({reason}). Community verification requested."
+  officer_security:
+    en: "POSSIBLE CYBER ATTACK on sensor {sensor}: {reason}. Sensor quarantined; evidence preserved."
+  officer_fault:
+    en: "SENSOR FAULT ({subtype}) on {sensor}. Maintenance ticket opened; estimate in use."
+  officer_recommend_evac:
+    en: "Evacuation RECOMMENDATION for human decision at {station}. No order has been sent."
+
+# Reason codes → plain-language English defaults (RULES.md Appendix A, exact texts)
+reasons:
+  TRANSPORT_SIG_INVALID: "The message signature is invalid."
+  TRANSPORT_SEQ_REPLAY: "A message sequence number was reused or went backwards."
+  TRANSPORT_STATION_MISMATCH: "The message claims a different station than the channel it arrived on."
+  TRANSPORT_UNKNOWN_STATION: "No key is registered for this station."
+  TRANSPORT_TS_SKEW: "The message timestamp is too far from the expected time."
+  TRANSPORT_TS_NONMONOTONIC: "The message timestamp is not newer than the last accepted one."
+  SHAPE_DROPOUT: "The sensor output has a non-physical signature (dropout)."
+  SHAPE_STUCK: "The sensor output has a non-physical signature (stuck value)."
+  SHAPE_SPIKE: "The sensor output has a non-physical signature (spike that reverts)."
+  SHAPE_NOISE: "The sensor output has a non-physical signature (noise burst)."
+  SHAPE_RANGE: "The sensor output has a non-physical signature (out of range)."
+  CONTEXT_CONSISTENT: "The reading matches what upstream gauges and rainfall predict."
+  CONTEXT_PHANTOM: "The reading is much higher than upstream gauges and rainfall can explain."
+  CONTEXT_SUPPRESSED: "The reading is much lower than upstream gauges and rainfall imply."
+  UPSTREAM_RISING: "State of the upstream trend."
+  UPSTREAM_FLAT: "State of the upstream trend."
+  UPSTREAM_FALLING: "State of the upstream trend."
+  UPSTREAM_UNKNOWN: "State of the upstream trend."
+  RAIN_YES: "Whether recent rainfall supports a rise."
+  RAIN_NO: "Whether recent rainfall supports a rise."
+  RAIN_UNKNOWN: "Whether recent rainfall supports a rise."
+  DOWNSTREAM_YES: "Whether the downstream gauge responded as expected."
+  DOWNSTREAM_NO: "Whether the downstream gauge responded as expected."
+  DOWNSTREAM_PENDING: "Whether the downstream gauge responded as expected."
+  DOWNSTREAM_UNKNOWN: "Whether the downstream gauge responded as expected."
+  REPLAY_MATCH: "The recent readings are an exact copy of an earlier period."
+  NOISE_TOO_CLEAN: "The signal is unnaturally smooth for a real sensor."
+  DRIFT_PATTERN: "A small, slow, sustained deviation consistent with calibration drift."
+  INSUFFICIENT_INPUTS: "Not enough trustworthy inputs to verify this reading."
+  NO_RAIN_SUPPORT: "Upstream agrees, but there is no rainfall to explain a rise and downstream has not confirmed."
+  AMBIGUOUS_RESIDUAL: "The reading is somewhat unusual but not clearly wrong."
+  CONFLICTING_EVIDENCE: "Evidence sources disagree."
+  UNSUPPORTED_DEVIATION: "The reading is lower than expected but nothing explains why."
+  DEGRADED_INPUTS: "A lower-quality model variant was used because some inputs were unavailable."
+
+# Registered verification volunteers (DESIGN §9.3 volunteers; TASKS T003: V1–V4, station B, reliability 0.8)
+volunteers:
+  - id: V1
+    name: "Volunteer 1"
+    language: en
+    station: B
+    reliability: 0.8
+  - id: V2
+    name: "Volunteer 2"
+    language: hi
+    station: B
+    reliability: 0.8
+  - id: V3
+    name: "Volunteer 3"
+    language: en
+    station: B
+    reliability: 0.8
+  - id: V4
+    name: "Volunteer 4"
+    language: hi
+    station: B
+    reliability: 0.8

@@ -1,0 +1,59 @@
+# config/thresholds.yaml — authoritative defaults (RULES.md §5)
+transport:
+  ts_skew_max_seconds: 300
+  soft_flag_suspect_ticks: 2        # consecutive soft flags that move a sensor to SUSPECT
+context:
+  z_consistent: 3.0
+  z_implausible: 5.0
+  z_window_ticks: 3
+  scale_floor: 0.02                 # ln Q units
+  band_z: 3.0                       # estimate interval half-width in scale units
+trend:
+  up_window_ticks: 8
+  up_rising_min: 0.10               # ln Q rise over window
+  up_flat_max: 0.03
+rain:
+  window_hours: 48
+  yes_mm: null                      # derived by fit_models.py if null
+  no_fraction: 0.25                 # no_mm = no_fraction * yes_mm
+  no_mm: null
+  stale_hours: 3
+health:
+  dropout_ticks: 2
+  stuck_ticks: 8
+  stuck_pred_change_min: 0.05
+  spike_revert_ticks: 3
+  spike_revert_tol_steps: 3
+  noise_window_ticks: 8
+  noise_ratio_max: 5.0
+  clean_window_ticks: 16
+  clean_ratio_min: 0.2
+  clean_min_move_steps: 3
+drift:
+  max_dev: 0.25                     # |mean residual| in ln Q
+  max_rate_per_hour: 0.02
+replay:
+  window_ticks: 24
+  tol_steps: 2
+  min_range_steps: 5
+  min_age_days: 7
+persistence:
+  fault_attack_ticks: 3
+  real_downgrade_ticks: 3
+  immediate_subtypes: [SIG_INVALID, SEQ_REPLAY, STATION_MISMATCH, UNKNOWN_STATION, RANGE]
+sensor:
+  clean_ticks_to_recover: 4         # QUARANTINED -> RECOVERING
+  recovery_ticks: 8                 # RECOVERING -> TRUSTED
+alert:
+  watch_idle_ticks: 8
+  clear_ticks: 8
+  est_warn_ticks: 2
+verification:
+  prior_real: 0.5
+  default_reliability: 0.8
+  confirm_posterior: 0.9
+  refute_posterior: 0.1
+  min_replies: 2
+  timeout_ticks: 4
+  cooldown_ticks: 8
+  max_volunteers: 4

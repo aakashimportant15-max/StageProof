@@ -1,0 +1,19 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Downloaded raw source data (cached by scripts/prepare_data.py)
+data/raw/
+
+# Generated artifacts (mostly gitignored per ARCHITECTURE 2.1; reach.csv and
+# model.json are intentionally committable so runtime never needs the network)
+artifacts/audit/
+artifacts/replay_cache/
+artifacts/eval/

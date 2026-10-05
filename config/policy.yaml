@@ -1,0 +1,64 @@
+# config/policy.yaml — action tiers and trigger map (RULES.md §12, encoded exactly).
+# Tier 0 = automatic; Tier 1 = one-tap officer approval (auto-approved in demo only when
+# demo_auto_approve_tier1 is true, displayed as "AUTO-APPROVED (demo)"); Tier 2 = human only,
+# never automatic, never auto-approved.
+demo_auto_approve_tier1: true
+
+tiers:
+  QUARANTINE_SENSOR: 0
+  USE_ESTIMATE: 0
+  OPEN_MAINTENANCE_TICKET: 0
+  RAISE_SECURITY_ALERT: 0
+  PRESERVE_EVIDENCE: 0
+  NOTIFY_OFFICER: 0
+  REQUEST_VERIFICATION: 0
+  SEND_PUBLIC_WARNING: 1
+  SEND_CORRECTION: 1
+  SEND_ALL_CLEAR: 1
+  RECOMMEND_EVACUATION: 2
+  ACK_RELEASE: 2
+
+triggers:
+  # Verdict commit SENSOR_FAULT
+  verdict_sensor_fault:
+    - QUARANTINE_SENSOR
+    - OPEN_MAINTENANCE_TICKET
+    - USE_ESTIMATE
+  # Verdict commit POSSIBLE_CYBER_ATTACK
+  verdict_possible_cyber_attack:
+    - QUARANTINE_SENSOR
+    - RAISE_SECURITY_ALERT
+    - PRESERVE_EVIDENCE
+    - NOTIFY_OFFICER
+    - USE_ESTIMATE
+  # Verdict commit UNCERTAIN ∧ notable (subject to verification.cooldown_ticks)
+  verdict_uncertain_notable:
+    - NOTIFY_OFFICER
+    - REQUEST_VERIFICATION
+  # Alert → WATCH
+  alert_watch:
+    - NOTIFY_OFFICER
+  # Alert → PROVISIONAL_WARNING
+  alert_provisional_warning:
+    - action: SEND_PUBLIC_WARNING
+      level: PROVISIONAL
+    - NOTIFY_OFFICER
+  # Alert → CONFIRMED_WARNING
+  alert_confirmed_warning:
+    - action: SEND_PUBLIC_WARNING
+      level: CONFIRMED
+    # created only when levels.B.evac_stage is non-null ("if configured")
+    - action: RECOMMEND_EVACUATION
+      if_configured: evac_stage
+  # Alert retraction
+  alert_retraction:
+    - SEND_CORRECTION
+    - NOTIFY_OFFICER
+  # Alert → CLEARED
+  alert_cleared:
+    - SEND_ALL_CLEAR
+  # Officer ACK_RELEASE releases an ATTACK quarantine when the clean condition holds
+  # (Tier 2: the ACK itself is a human decision, never automatic)
+  officer_ack_release:
+    - action: ACK_RELEASE
+      note: releases ATTACK quarantine only when the clean condition holds

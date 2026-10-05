@@ -1,0 +1,78 @@
+{
+  "compromised_keys": [],
+  "corruptions": [],
+  "description": "An attacker without keys injects an unsigned 18 ft reading, then replays an old signed packet. Transport must reject both (SIG_INVALID, SEQ_REPLAY), the engine must commit ATTACK at one tick each, quarantine B, raise a security alert, and fall back to estimates.",
+  "event_start_tick": 196,
+  "expected": {
+    "actions": {
+      "must_include": [
+        "QUARANTINE_SENSOR",
+        "RAISE_SECURITY_ALERT",
+        "PRESERVE_EVIDENCE"
+      ],
+      "must_not_include": [
+        "SEND_PUBLIC_WARNING"
+      ]
+    },
+    "alert": {
+      "must_not_exceed": "WATCH"
+    },
+    "committed": [
+      {
+        "from_tick": 211,
+        "label": "POSSIBLE_CYBER_ATTACK",
+        "subtype": "SIG_INVALID",
+        "to_tick": 214,
+        "tolerance_ticks": 0
+      },
+      {
+        "from_tick": 219,
+        "label": "POSSIBLE_CYBER_ATTACK",
+        "subtype": null,
+        "to_tick": 222,
+        "tolerance_ticks": 0
+      }
+    ],
+    "sensor": [
+      {
+        "by_tick": 224,
+        "role": "B",
+        "state": "QUARANTINED"
+      }
+    ]
+  },
+  "feed_outages": [],
+  "ground_truth": {
+    "label": "NORMAL",
+    "subtype": null,
+    "truth_notable": false
+  },
+  "id": "F",
+  "operator_script": [],
+  "seed": 606,
+  "title": "Unsigned injection and packet replay on B",
+  "transport_attacks": [
+    {
+      "params": {
+        "stage": 18.0
+      },
+      "role": "B",
+      "tick": 212,
+      "type": "UNSIGNED_INJECT"
+    },
+    {
+      "params": {
+        "from_offset_ticks": 4
+      },
+      "role": "B",
+      "tick": 220,
+      "type": "REPLAY_PACKET"
+    }
+  ],
+  "volunteer_script": [],
+  "warmup_ticks": 196,
+  "window": {
+    "end": "2021-07-01T14:00:00+00:00",
+    "start": "2021-07-01T00:00:00+00:00"
+  }
+}

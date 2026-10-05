@@ -1,0 +1,81 @@
+{
+  "compromised_keys": [],
+  "corruptions": [],
+  "description": "A and T go dark for 6 ticks as B crosses watch stage. Evidence goes INSUFFICIENT; volunteers V1 and V2 confirm flooding; the engine must walk UNCERTAIN -> PROVISIONAL (COMMUNITY) -> REAL after A returns -> CONFIRMED on downstream response.",
+  "event_start_tick": 196,
+  "expected": {
+    "actions": {
+      "must_include": [
+        "REQUEST_VERIFICATION",
+        "SEND_PUBLIC_WARNING"
+      ],
+      "must_not_include": [
+        "QUARANTINE_SENSOR",
+        "RAISE_SECURITY_ALERT"
+      ]
+    },
+    "alert": {
+      "must_reach": "PROVISIONAL_WARNING",
+      "source": "COMMUNITY",
+      "within_ticks": 14
+    },
+    "baselines": {
+      "rollz_flags_min": 1
+    },
+    "committed": [
+      {
+        "from_tick": 198,
+        "label": "UNCERTAIN",
+        "subtype": null,
+        "to_tick": 202,
+        "tolerance_ticks": 1
+      },
+      {
+        "from_tick": 202,
+        "label": "REAL_FLOOD",
+        "subtype": null,
+        "to_tick": 212,
+        "tolerance_ticks": 2
+      }
+    ]
+  },
+  "feed_outages": [
+    {
+      "end_tick": 201,
+      "feed": "A",
+      "start_tick": 196
+    },
+    {
+      "end_tick": 201,
+      "feed": "T",
+      "start_tick": 196
+    }
+  ],
+  "ground_truth": {
+    "label": "REAL_FLOOD",
+    "subtype": null,
+    "truth_notable": true
+  },
+  "id": "E",
+  "operator_script": [],
+  "seed": 505,
+  "title": "Feed outage during the rise, volunteer verification",
+  "transport_attacks": [],
+  "volunteer_script": [
+    {
+      "code": 1,
+      "tick_offset": 4,
+      "volunteer_id": "V1"
+    },
+    {
+      "code": 1,
+      "tick_offset": 4,
+      "volunteer_id": "V2"
+    }
+  ],
+  "warmup_ticks": 196,
+  "window": {
+    "end": "2020-11-13T04:30:00+00:00",
+    "start": "2020-11-12T04:45:00+00:00"
+  }
+}

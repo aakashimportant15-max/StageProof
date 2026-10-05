@@ -1,0 +1,113 @@
+# config/reach.yaml — reach definition (ARCHITECTURE.md §13.2 structure).
+# Reach selected 2026-10-04 by human decision (TASKS T006): James River, VA.
+#   A = 02029000 James River at Scottsville, VA
+#   T = 02034000 Rivanna River at Palmyra, VA (mouth at Columbia, between A and B)
+#   B = 02035000 James River at Cartersville, VA (target)
+#   C = 02037500 James River near Richmond, VA (non-tidal)
+#
+# Value bases (details in docs/MEMORY.md §26/§27):
+#   - sensor_min/max: full-record 15-min stage envelope (2007-10-01..2026-10-04)
+#     with margin — min floored by 1 ft, max raised by 2 ft — so a legitimate
+#     record flood is never RANGE-flagged (RULES §3.2). Observed envelopes:
+#     A 2.04..22.10, T 1.98..25.51, B 0.44..24.18, C 3.02..18.33.
+#   - noise_std: std of 15-min stage first differences in a quiet week
+#     (2015-08-10..17): A 0.0069, T 0.0056, B 0.0077, C 0.0045 (rounded).
+#   - levels.B by percentile of B's full-record stage: p99 14.84, p995 17.31,
+#     p999 20.76, record (2020-11-13) 24.18.
+#       watch 14.0 (~p99): notable in roughly the top few events since 2007;
+#       action 17.0 (~p99.5): major-flood band, crossed by the 2020 main flood;
+#       clear 15.0: 2 ft hysteresis below action.
+
+tick_minutes: 15
+
+units:
+  stage: ft
+  discharge: cfs
+
+stations:
+  A:
+    usgs_site: "02029000"
+    name: James River at Scottsville, VA
+    role: upstream
+    quant_step: 0.01
+    sensor_min: 1.0
+    sensor_max: 24.0
+    noise_std: 0.007
+    key_env: STAGEPROOF_KEY_A
+  T:
+    usgs_site: "02034000"
+    name: Rivanna River at Palmyra, VA
+    role: tributary
+    quant_step: 0.01
+    sensor_min: 1.0
+    sensor_max: 27.5
+    noise_std: 0.006
+    key_env: STAGEPROOF_KEY_T
+  B:
+    usgs_site: "02035000"
+    name: James River at Cartersville, VA
+    role: target
+    quant_step: 0.01
+    sensor_min: 0.0
+    sensor_max: 26.0
+    noise_std: 0.008
+    key_env: STAGEPROOF_KEY_B
+  C:
+    usgs_site: "02037500"
+    name: James River near Richmond, VA
+    role: downstream
+    quant_step: 0.01
+    sensor_min: 2.0
+    sensor_max: 20.5
+    noise_std: 0.005
+    key_env: STAGEPROOF_KEY_C
+
+levels:
+  B:
+    watch_stage: 14.0
+    action_stage: 17.0
+    clear_stage: 15.0     # < action_stage
+    evac_stage: null      # null disables evacuation recommendations
+
+rain:
+  points:
+    - lat: 38.2372
+      lon: -78.4528
+      station: KCHO       # Charlottesville, VA (north rim / Rivanna headwaters)
+      weight: 0.25
+    - lat: 37.3231
+      lon: -79.2020
+      station: KLYH       # Lynchburg, VA (south-central basin)
+      weight: 0.25
+    - lat: 37.2858
+      lon: -78.1614
+      station: KFVX       # Farmville, VA (southeast basin)
+      weight: 0.25
+    - lat: 37.5052
+      lon: -77.3197
+      station: KRIC       # Richmond, VA (eastern rim, lower James)
+      weight: 0.25
+  source: IEM ASOS hourly p01i (mesonet.agron.iastate.edu, report_type=3, UTC), equal-weight basin mean
+
+splits:
+  train: {start: "2010-01-01", end: "2016-12-31"}
+  calibration: {start: "2017-01-01", end: "2019-08-31"}
+  test: {start: "2019-09-01", end: "2025-06-30"}
+
+events:
+  main_flood: {start: "2020-11-10", end: "2020-11-17"}    # record: 102,000 cfs / 24.18 ft on 2020-11-13
+  moderate_event: {start: "2024-01-08", end: "2024-01-13"}  # 78,200 cfs on 2024-01-10
+  dry_window: {start: "2021-07-01", end: "2021-07-14"}
+  outage_event: {start: null, end: null}   # optional; may stay null
+
+baselines:
+  window_ticks: 96        # 24 h at 15-min ticks (engineering choice; no documented default)
+  rollz_threshold: 6.0    # rolling robust-z threshold for the comparison baseline
+
+fit:
+  # n_lags/lag_divisor widened per ARCHITECTURE §6.7 lag-grid remediation;
+  # decision record with evidence in docs/MEMORY.md §26 (§6.4 default is 7/6).
+  n_lags: 11
+  lag_divisor: 4
+  highflow_weight: true  # remediation toggle (ARCHITECTURE §6.7)
+  highflow_quantile: 0.90 # rows above this training percentile of Q_B

@@ -1,0 +1,664 @@
+{
+  "created_utc": "2026-10-04T18:37:18+00:00",
+  "data_hash": "e47edbdabca1923d14b76f8c290b8f617685f5386ad32fe6ff28b39ab47b9dfd",
+  "config_hash": "f23db8e5fa059b909b56d6f50686295721202126c5b5f2004859412cadafe9b9",
+  "rows": {
+    "train": 245472,
+    "calibration": 93408,
+    "test": 204480,
+    "total": 590496
+  },
+  "ratings": {
+    "A": {
+      "type": "power_law",
+      "quality": {
+        "log_r2": 0.9954686975707914,
+        "n": 235480,
+        "h0_grid": "searched"
+      },
+      "range": [
+        2.26,
+        22.1
+      ],
+      "q_range": [
+        606.0,
+        88500.0
+      ]
+    },
+    "T": {
+      "type": "power_law",
+      "quality": {
+        "log_r2": 0.9836920764801593,
+        "n": 240570,
+        "h0_grid": "searched"
+      },
+      "range": [
+        2.25,
+        24.72
+      ],
+      "q_range": [
+        45.6,
+        26500.0
+      ]
+    },
+    "B": {
+      "type": "power_law",
+      "quality": {
+        "log_r2": 0.9944974205266842,
+        "n": 233941,
+        "h0_grid": "searched"
+      },
+      "range": [
+        0.5,
+        23.94
+      ],
+      "q_range": [
+        658.0,
+        98500.0
+      ]
+    },
+    "C": {
+      "type": "power_law",
+      "quality": {
+        "log_r2": 0.9903471637369159,
+        "n": 244128,
+        "h0_grid": "searched"
+      },
+      "range": [
+        3.17,
+        18.1
+      ],
+      "q_range": [
+        522.0,
+        104000.0
+      ]
+    }
+  },
+  "travel_times": {
+    "AB": {
+      "lag_ticks": 29,
+      "corr": 0.98188,
+      "pairs": 238801,
+      "hours": 7.25
+    },
+    "TB": {
+      "lag_ticks": 51,
+      "corr": 0.91538,
+      "pairs": 242730,
+      "hours": 12.75
+    },
+    "BC": {
+      "lag_ticks": 44,
+      "corr": 0.98949,
+      "pairs": 243092,
+      "hours": 11.0
+    }
+  },
+  "lag_grids": {
+    "A": [
+      0,
+      7,
+      14,
+      21,
+      28,
+      35,
+      42,
+      49,
+      56,
+      63,
+      70
+    ],
+    "T": [
+      0,
+      13,
+      26,
+      39,
+      52,
+      65,
+      78,
+      91,
+      104,
+      117,
+      130
+    ],
+    "downstream_B": [
+      0,
+      11,
+      22,
+      33,
+      44,
+      55,
+      66,
+      77,
+      88,
+      99,
+      110
+    ]
+  },
+  "variants": [
+    {
+      "name": "A+T",
+      "inputs": [
+        "A",
+        "T"
+      ],
+      "lags": {
+        "A": [
+          0,
+          7,
+          14,
+          21,
+          28,
+          35,
+          42,
+          49,
+          56,
+          63,
+          70
+        ],
+        "T": [
+          0,
+          13,
+          26,
+          39,
+          52,
+          65,
+          78,
+          91,
+          104,
+          117,
+          130
+        ]
+      },
+      "feature_names": [
+        "lnQ_A_l0",
+        "lnQ_A_l7",
+        "lnQ_A_l14",
+        "lnQ_A_l21",
+        "lnQ_A_l28",
+        "lnQ_A_l35",
+        "lnQ_A_l42",
+        "lnQ_A_l49",
+        "lnQ_A_l56",
+        "lnQ_A_l63",
+        "lnQ_A_l70",
+        "lnQ_T_l0",
+        "lnQ_T_l13",
+        "lnQ_T_l26",
+        "lnQ_T_l39",
+        "lnQ_T_l52",
+        "lnQ_T_l65",
+        "lnQ_T_l78",
+        "lnQ_T_l91",
+        "lnQ_T_l104",
+        "lnQ_T_l117",
+        "lnQ_T_l130"
+      ],
+      "calib_rows": 85626,
+      "nse_calib_lnQ": 0.98504,
+      "scale_normal": 0.075821,
+      "scale_high": 0.063156,
+      "rows": 235734,
+      "drop_fraction": 0.03082
+    },
+    {
+      "name": "A+T+R",
+      "inputs": [
+        "A",
+        "T",
+        "R"
+      ],
+      "lags": {
+        "A": [
+          0,
+          7,
+          14,
+          21,
+          28,
+          35,
+          42,
+          49,
+          56,
+          63,
+          70
+        ],
+        "T": [
+          0,
+          13,
+          26,
+          39,
+          52,
+          65,
+          78,
+          91,
+          104,
+          117,
+          130
+        ]
+      },
+      "feature_names": [
+        "lnQ_A_l0",
+        "lnQ_A_l7",
+        "lnQ_A_l14",
+        "lnQ_A_l21",
+        "lnQ_A_l28",
+        "lnQ_A_l35",
+        "lnQ_A_l42",
+        "lnQ_A_l49",
+        "lnQ_A_l56",
+        "lnQ_A_l63",
+        "lnQ_A_l70",
+        "lnQ_T_l0",
+        "lnQ_T_l13",
+        "lnQ_T_l26",
+        "lnQ_T_l39",
+        "lnQ_T_l52",
+        "lnQ_T_l65",
+        "lnQ_T_l78",
+        "lnQ_T_l91",
+        "lnQ_T_l104",
+        "lnQ_T_l117",
+        "lnQ_T_l130",
+        "ln1p_P1",
+        "ln1p_P3",
+        "ln1p_P6",
+        "ln1p_P12",
+        "ln1p_P24",
+        "ln1p_P48"
+      ],
+      "calib_rows": 85378,
+      "nse_calib_lnQ": 0.98507,
+      "scale_normal": 0.075992,
+      "scale_high": 0.061956,
+      "rows": 186658,
+      "drop_fraction": 0.23259
+    },
+    {
+      "name": "A+R",
+      "inputs": [
+        "A",
+        "R"
+      ],
+      "lags": {
+        "A": [
+          0,
+          7,
+          14,
+          21,
+          28,
+          35,
+          42,
+          49,
+          56,
+          63,
+          70
+        ],
+        "T": [
+          0,
+          13,
+          26,
+          39,
+          52,
+          65,
+          78,
+          91,
+          104,
+          117,
+          130
+        ]
+      },
+      "feature_names": [
+        "lnQ_A_l0",
+        "lnQ_A_l7",
+        "lnQ_A_l14",
+        "lnQ_A_l21",
+        "lnQ_A_l28",
+        "lnQ_A_l35",
+        "lnQ_A_l42",
+        "lnQ_A_l49",
+        "lnQ_A_l56",
+        "lnQ_A_l63",
+        "lnQ_A_l70",
+        "ln1p_P1",
+        "ln1p_P3",
+        "ln1p_P6",
+        "ln1p_P12",
+        "ln1p_P24",
+        "ln1p_P48"
+      ],
+      "calib_rows": 89265,
+      "nse_calib_lnQ": 0.97414,
+      "scale_normal": 0.108701,
+      "scale_high": 0.059858,
+      "rows": 188010,
+      "drop_fraction": 0.22703
+    },
+    {
+      "name": "A",
+      "inputs": [
+        "A"
+      ],
+      "lags": {
+        "A": [
+          0,
+          7,
+          14,
+          21,
+          28,
+          35,
+          42,
+          49,
+          56,
+          63,
+          70
+        ],
+        "T": [
+          0,
+          13,
+          26,
+          39,
+          52,
+          65,
+          78,
+          91,
+          104,
+          117,
+          130
+        ]
+      },
+      "feature_names": [
+        "lnQ_A_l0",
+        "lnQ_A_l7",
+        "lnQ_A_l14",
+        "lnQ_A_l21",
+        "lnQ_A_l28",
+        "lnQ_A_l35",
+        "lnQ_A_l42",
+        "lnQ_A_l49",
+        "lnQ_A_l56",
+        "lnQ_A_l63",
+        "lnQ_A_l70"
+      ],
+      "calib_rows": 89521,
+      "nse_calib_lnQ": 0.97131,
+      "scale_normal": 0.1094,
+      "scale_high": 0.069474,
+      "rows": 237302,
+      "drop_fraction": 0.02438
+    },
+    {
+      "name": "T",
+      "inputs": [
+        "T"
+      ],
+      "lags": {
+        "A": [
+          0,
+          7,
+          14,
+          21,
+          28,
+          35,
+          42,
+          49,
+          56,
+          63,
+          70
+        ],
+        "T": [
+          0,
+          13,
+          26,
+          39,
+          52,
+          65,
+          78,
+          91,
+          104,
+          117,
+          130
+        ]
+      },
+      "feature_names": [
+        "lnQ_T_l0",
+        "lnQ_T_l13",
+        "lnQ_T_l26",
+        "lnQ_T_l39",
+        "lnQ_T_l52",
+        "lnQ_T_l65",
+        "lnQ_T_l78",
+        "lnQ_T_l91",
+        "lnQ_T_l104",
+        "lnQ_T_l117",
+        "lnQ_T_l130"
+      ],
+      "calib_rows": 88452,
+      "nse_calib_lnQ": 0.83176,
+      "scale_normal": 0.356263,
+      "scale_high": 0.363033,
+      "rows": 241581,
+      "drop_fraction": 0.00678
+    },
+    {
+      "name": "T+R",
+      "inputs": [
+        "T",
+        "R"
+      ],
+      "lags": {
+        "A": [
+          0,
+          7,
+          14,
+          21,
+          28,
+          35,
+          42,
+          49,
+          56,
+          63,
+          70
+        ],
+        "T": [
+          0,
+          13,
+          26,
+          39,
+          52,
+          65,
+          78,
+          91,
+          104,
+          117,
+          130
+        ]
+      },
+      "feature_names": [
+        "lnQ_T_l0",
+        "lnQ_T_l13",
+        "lnQ_T_l26",
+        "lnQ_T_l39",
+        "lnQ_T_l52",
+        "lnQ_T_l65",
+        "lnQ_T_l78",
+        "lnQ_T_l91",
+        "lnQ_T_l104",
+        "lnQ_T_l117",
+        "lnQ_T_l130",
+        "ln1p_P1",
+        "ln1p_P3",
+        "ln1p_P6",
+        "ln1p_P12",
+        "ln1p_P24",
+        "ln1p_P48"
+      ],
+      "calib_rows": 88204,
+      "nse_calib_lnQ": 0.83257,
+      "scale_normal": 0.358926,
+      "scale_high": 0.342709,
+      "rows": 189527,
+      "drop_fraction": 0.22079
+    },
+    {
+      "name": "R",
+      "inputs": [
+        "R"
+      ],
+      "lags": {
+        "A": [
+          0,
+          7,
+          14,
+          21,
+          28,
+          35,
+          42,
+          49,
+          56,
+          63,
+          70
+        ],
+        "T": [
+          0,
+          13,
+          26,
+          39,
+          52,
+          65,
+          78,
+          91,
+          104,
+          117,
+          130
+        ]
+      },
+      "feature_names": [
+        "ln1p_P1",
+        "ln1p_P3",
+        "ln1p_P6",
+        "ln1p_P12",
+        "ln1p_P24",
+        "ln1p_P48"
+      ],
+      "calib_rows": 92091,
+      "nse_calib_lnQ": 0.01914,
+      "scale_normal": 1.093162,
+      "scale_high": 1.008822,
+      "rows": 190961,
+      "drop_fraction": 0.2149
+    }
+  ],
+  "downstream": {
+    "rows": 188204,
+    "drop_fraction": 0.233,
+    "alpha": 31.622776601683793,
+    "scale_normal": 0.06146,
+    "scale_high": 0.031459
+  },
+  "station_params": {
+    "A": {
+      "spike_delta_max": 0.25,
+      "noise_baseline_std": 0.02047,
+      "quant_step": 0.01
+    },
+    "T": {
+      "spike_delta_max": 0.34,
+      "noise_baseline_std": 0.026073,
+      "quant_step": 0.01
+    },
+    "B": {
+      "spike_delta_max": 0.26,
+      "noise_baseline_std": 0.022453,
+      "quant_step": 0.01
+    },
+    "C": {
+      "spike_delta_max": 0.15,
+      "noise_baseline_std": 0.013001,
+      "quant_step": 0.01
+    }
+  },
+  "rain": {
+    "yes_mm": 0.656,
+    "no_mm": 0.127,
+    "derivation": {
+      "large_rises": 5827,
+      "rise_start_samples": 5816,
+      "yes_mm_raw": 0.6562,
+      "no_mm_raw": 0.127
+    }
+  },
+  "required_history_ticks": 192,
+  "baseline_stats": {
+    "B_stage_median": 2.9,
+    "B_stage_mad": 2.2387
+  },
+  "consistency_check": {
+    "tick": 125624,
+    "pass": true
+  },
+  "gates": {
+    "G-fit-1_nse_lnQ": {
+      "value": 0.98504,
+      "required": ">= 0.90",
+      "pass": true
+    },
+    "G-fit-2_auc_phantom": {
+      "value": 0.9337,
+      "required": ">= 0.93",
+      "pass": true
+    },
+    "G-fit-3_flag_rate_per_sensor_day": {
+      "value": 1.43844,
+      "required": "<= 1.5",
+      "pass": true,
+      "detail": {
+        "flags": 1283,
+        "calib_rows": 85626,
+        "sensor_days": 891.94,
+        "z_implausible": 5.0
+      }
+    },
+    "G-fit-4_top_decile_bias": {
+      "value": -0.0285,
+      "required": "|bias| <= 0.10",
+      "pass": true
+    }
+  },
+  "gates_all_pass": true,
+  "n17_notes": [
+    "event 'outage_event' is null \u2014 no window asserted"
+  ],
+  "config": {
+    "n_lags": 11,
+    "highflow_weight": true,
+    "highflow_quantile": 0.9,
+    "alpha_grid": [
+      0.001,
+      0.0031622776601683794,
+      0.01,
+      0.03162277660168379,
+      0.1,
+      0.31622776601683794,
+      1.0,
+      3.1622776601683795,
+      10.0,
+      31.622776601683793,
+      100.0,
+      316.22776601683796,
+      1000.0
+    ],
+    "highflow_sample_weight": 5.0,
+    "lag_max_ticks": 192,
+    "min_corr_pairs": 20000,
+    "warmup_ticks": 192,
+    "power_law_min_log_r2": 0.95
+  },
+  "engineering_choices": [
+    "tau search grid 0..192 ticks (48 h)",
+    "min cross-correlation pairs 20000",
+    "training rows start at tick 192 (P48 warm-up)",
+    "quant_step derived as mode of positive stage diffs (>= max(10, 1%) occurrences) else p10 of positive diffs",
+    "spike_delta_max = p99.9 of |stage diff| on train",
+    "noise_baseline_std = std(15-min stage diffs) on train, floored at the quiet-week config value"
+  ]
+}

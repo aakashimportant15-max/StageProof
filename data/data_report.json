@@ -1,0 +1,231 @@
+{
+  "generated_at_utc": "2026-10-04T14:12:48+00:00",
+  "grid": {
+    "step_minutes": 15,
+    "start": "2009-12-02",
+    "end": "2026-10-04",
+    "rows": 590496,
+    "monotonic": true,
+    "regular_step": true
+  },
+  "usgs": {
+    "A_stage": {
+      "site": "02029000",
+      "parameter": "00065",
+      "source": "waterdata.get_continuous",
+      "fetched": true,
+      "rows": 577675,
+      "start_utc": "2009-12-01T18:30:00+00:00",
+      "end_utc": "2026-10-04T13:15:00+00:00"
+    },
+    "A_q": {
+      "site": "02029000",
+      "parameter": "00060",
+      "source": "waterdata.get_continuous",
+      "fetched": true,
+      "rows": 571995,
+      "start_utc": "2009-12-01T18:30:00+00:00",
+      "end_utc": "2026-10-04T13:15:00+00:00"
+    },
+    "T_stage": {
+      "site": "02034000",
+      "parameter": "00065",
+      "source": "waterdata.get_continuous",
+      "fetched": true,
+      "rows": 1244114,
+      "start_utc": "2009-12-01T18:30:00+00:00",
+      "end_utc": "2026-10-04T14:05:00+00:00"
+    },
+    "T_q": {
+      "site": "02034000",
+      "parameter": "00060",
+      "source": "waterdata.get_continuous",
+      "fetched": true,
+      "rows": 1236137,
+      "start_utc": "2009-12-01T18:30:00+00:00",
+      "end_utc": "2026-10-04T14:05:00+00:00"
+    },
+    "B_stage": {
+      "site": "02035000",
+      "parameter": "00065",
+      "source": "waterdata.get_continuous",
+      "fetched": true,
+      "rows": 582341,
+      "start_utc": "2009-12-01T18:30:00+00:00",
+      "end_utc": "2026-10-04T13:45:00+00:00"
+    },
+    "B_q": {
+      "site": "02035000",
+      "parameter": "00060",
+      "source": "waterdata.get_continuous",
+      "fetched": true,
+      "rows": 572857,
+      "start_utc": "2009-12-01T18:30:00+00:00",
+      "end_utc": "2026-10-04T13:45:00+00:00"
+    },
+    "C_stage": {
+      "site": "02037500",
+      "parameter": "00065",
+      "source": "waterdata.get_continuous",
+      "fetched": true,
+      "rows": 589232,
+      "start_utc": "2009-12-01T18:30:00+00:00",
+      "end_utc": "2026-10-04T13:30:00+00:00"
+    },
+    "C_q": {
+      "site": "02037500",
+      "parameter": "00060",
+      "source": "nwis.get_iv",
+      "fetched": true,
+      "rows": 587809,
+      "start_utc": "2009-12-02T05:00:00+00:00",
+      "end_utc": "2026-10-04T13:30:00+00:00"
+    }
+  },
+  "rain": {
+    "source": "IEM ASOS hourly p01i (mesonet.agron.iastate.edu, report_type=3, UTC), equal-weight basin mean",
+    "stations": {
+      "KCHO": {
+        "lat": 38.2372,
+        "lon": -78.4528,
+        "weight": 0.25,
+        "fetched": true,
+        "rows": 130415,
+        "start_utc": "2009-12-02T14:53:00+00:00",
+        "end_utc": "2026-10-03T23:53:00+00:00"
+      },
+      "KLYH": {
+        "lat": 37.3231,
+        "lon": -79.202,
+        "weight": 0.25,
+        "fetched": true,
+        "rows": 130724,
+        "start_utc": "2009-12-02T01:54:00+00:00",
+        "end_utc": "2026-10-03T23:54:00+00:00"
+      },
+      "KFVX": {
+        "lat": 37.2858,
+        "lon": -78.1614,
+        "weight": 0.25,
+        "fetched": true,
+        "rows": 120088,
+        "start_utc": "2009-12-02T14:20:00+00:00",
+        "end_utc": "2026-10-03T23:55:00+00:00"
+      },
+      "KRIC": {
+        "lat": 37.5052,
+        "lon": -77.3197,
+        "weight": 0.25,
+        "fetched": true,
+        "rows": 130790,
+        "start_utc": "2009-12-02T14:54:00+00:00",
+        "end_utc": "2026-10-03T23:54:00+00:00"
+      }
+    }
+  },
+  "columns": {
+    "A_stage": {
+      "missing": 9333,
+      "missing_pct": 1.581,
+      "longest_gap_ticks": 941,
+      "gaps_gt_1h": 172,
+      "interpolated_points": 3510
+    },
+    "A_q": {
+      "missing": 13414,
+      "missing_pct": 2.272,
+      "longest_gap_ticks": 2016,
+      "gaps_gt_1h": 297,
+      "interpolated_points": 5161
+    },
+    "T_stage": {
+      "missing": 3225,
+      "missing_pct": 0.546,
+      "longest_gap_ticks": 554,
+      "gaps_gt_1h": 132,
+      "interpolated_points": 994
+    },
+    "T_q": {
+      "missing": 9065,
+      "missing_pct": 1.535,
+      "longest_gap_ticks": 1824,
+      "gaps_gt_1h": 164,
+      "interpolated_points": 982
+    },
+    "B_stage": {
+      "missing": 6117,
+      "missing_pct": 1.036,
+      "longest_gap_ticks": 445,
+      "gaps_gt_1h": 186,
+      "interpolated_points": 2061
+    },
+    "B_q": {
+      "missing": 13928,
+      "missing_pct": 2.359,
+      "longest_gap_ticks": 5568,
+      "gaps_gt_1h": 176,
+      "interpolated_points": 3738
+    },
+    "C_stage": {
+      "missing": 1174,
+      "missing_pct": 0.199,
+      "longest_gap_ticks": 978,
+      "gaps_gt_1h": 15,
+      "interpolated_points": 112
+    },
+    "C_q": {
+      "missing": 2397,
+      "missing_pct": 0.406,
+      "longest_gap_ticks": 384,
+      "gaps_gt_1h": 36,
+      "interpolated_points": 290
+    },
+    "rain_mm_prev_hr": {
+      "missing": 55980,
+      "missing_pct": 9.48,
+      "longest_gap_ticks": 736,
+      "gaps_gt_1h": 1121
+    }
+  },
+  "timing_check": {
+    "rule": "row ts gets hourly value stamped floor(ts, 1h); METAR obs at :53 bucketed to the ceil hour (no future leak)",
+    "pass": true,
+    "samples": [
+      {
+        "ts_utc": "2009-12-02T06:00:00+00:00",
+        "hour_stamped": "2009-12-02T06:00:00+00:00",
+        "value": null,
+        "expected": null,
+        "ok": true
+      },
+      {
+        "ts_utc": "2018-05-04T12:00:00+00:00",
+        "hour_stamped": "2018-05-04T12:00:00+00:00",
+        "value": 0.0,
+        "expected": 0.0,
+        "ok": true
+      }
+    ]
+  },
+  "assumptions": {
+    "max_interp_minutes": 60,
+    "warmup_days": 30,
+    "rain_trace": "T treated as 0.0 mm",
+    "rain_bucket": "hour ending at bucket start (ceil of METAR obs time) so no future leak is possible"
+  },
+  "reach_csv": {
+    "path": "data\\reach.csv",
+    "columns": [
+      "ts_utc",
+      "A_stage",
+      "A_q",
+      "T_stage",
+      "T_q",
+      "B_stage",
+      "B_q",
+      "C_stage",
+      "C_q",
+      "rain_mm_prev_hr"
+    ]
+  }
+}

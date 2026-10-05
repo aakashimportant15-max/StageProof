@@ -1,0 +1,53 @@
+{
+  "compromised_keys": [],
+  "corruptions": [],
+  "description": "Untampered main_flood event: B crosses watch then action stage; engine must commit REAL_FLOOD and walk the alert ladder on observed data alone.",
+  "event_start_tick": 196,
+  "expected": {
+    "actions": {
+      "must_include": [
+        "SEND_PUBLIC_WARNING"
+      ],
+      "must_not_include": [
+        "QUARANTINE_SENSOR",
+        "RAISE_SECURITY_ALERT",
+        "OPEN_MAINTENANCE_TICKET"
+      ]
+    },
+    "alert": {
+      "must_reach": "PROVISIONAL_WARNING",
+      "source": "OBSERVED",
+      "within_ticks": 246
+    },
+    "baselines": {
+      "rollz_flags_min": 1,
+      "threshold_alarm": "expected_true"
+    },
+    "committed": [
+      {
+        "from_tick": 407,
+        "label": "REAL_FLOOD",
+        "subtype": null,
+        "to_tick": 415,
+        "tolerance_ticks": 2
+      }
+    ]
+  },
+  "feed_outages": [],
+  "ground_truth": {
+    "label": "REAL_FLOOD",
+    "subtype": null,
+    "truth_notable": true
+  },
+  "id": "A",
+  "operator_script": [],
+  "seed": 101,
+  "title": "Real flood, clean feed (2020-11 James River)",
+  "transport_attacks": [],
+  "volunteer_script": [],
+  "warmup_ticks": 196,
+  "window": {
+    "end": "2020-11-17T23:45:00+00:00",
+    "start": "2020-11-10T00:00:00+00:00"
+  }
+}
