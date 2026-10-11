@@ -77,6 +77,8 @@ SCENARIO_LABELS = {
 }
 
 PAGES = ["Live operations", "Incident & evidence", "Proof & audit"]
+NAV_ICONS = {"Live operations": "📈", "Incident & evidence": "🗂️",
+             "Proof & audit": "🛡️"}
 WINDOW_OPTIONS = ["6H", "12H", "24H", "48H", "All"]
 
 SENSOR_COLORS = {
@@ -357,20 +359,21 @@ def _ctx(run: dict) -> dict:
 _CSS = """
 <style>
 .stApp{background:#F4F7FB}
-.block-container{padding-top:1.2rem;max-width:1500px}
+.block-container{padding-top:3.6rem;max-width:1500px}
 [data-testid="stSidebar"]{background:#fff;border-right:1px solid #E3E8EF}
 [data-testid="stSidebar"] .stButton>button{border-radius:10px;
   border:1px solid #D5DEEA;font-weight:600}
 [data-testid="stSidebar"] [data-testid="stBaseButton-primary"],
 [data-testid="stSidebar"] button[kind="primary"]{
   background:linear-gradient(180deg,#3B8CF5,#2F80ED);border:none;color:#fff}
-[data-testid="stSidebar"] div[role="radiogroup"]{gap:2px}
-[data-testid="stSidebar"] div[role="radiogroup"] label{padding:9px 12px;
-  border-radius:10px;width:100%;cursor:pointer}
-[data-testid="stSidebar"] div[role="radiogroup"] label>div:first-child{
-  display:none}
-[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked){
-  background:#EAF2FE;color:#2F80ED;font-weight:700}
+[data-testid="stSidebar"] [class*="st-key-nav_"] button{
+  justify-content:flex-start !important;border:none !important;
+  background:transparent !important;color:#334155 !important;
+  font-weight:600 !important;box-shadow:none !important}
+[data-testid="stSidebar"] [class*="st-key-nav_"] button:hover{
+  background:#F1F5F9 !important}
+div[style*="border-radius:6px"]{border-radius:12px !important;
+  box-shadow:0 1px 3px rgba(15,42,67,.06)}
 div[data-testid="stMetric"]{background:#fff;border:1px solid #E3E8EF;
   border-radius:14px;padding:10px 14px;
   box-shadow:0 1px 3px rgba(15,42,67,.06)}
@@ -388,12 +391,14 @@ span.sp-pill{display:inline-block;border:1px solid rgba(255,255,255,.75);
   font-size:.7rem;font-weight:700;letter-spacing:.06em}
 div.sp-kpi{display:flex;gap:10px;align-items:center;background:#fff;
   border:1px solid #E3E8EF;border-radius:14px;padding:10px 12px;
-  min-height:78px;box-shadow:0 1px 3px rgba(15,42,67,.06)}
-div.sp-ico{flex:0 0 36px;height:36px;border-radius:50%;background:#EAF2FE;
+  height:98px;box-sizing:border-box;overflow:hidden;
+  box-shadow:0 1px 3px rgba(15,42,67,.06)}
+div.sp-kpi>div:last-child{min-width:0;flex:1}
+div.sp-ico{flex:0 0 36px;min-width:36px;height:36px;border-radius:50%;background:#EAF2FE;
   display:flex;align-items:center;justify-content:center;font-size:1.05rem}
 div.sp-kpi-t{color:#64748B;font-size:.7rem}
-div.sp-kpi-v{font-weight:700;font-size:.98rem;line-height:1.2}
-div.sp-kpi-s{color:#64748B;font-size:.68rem;margin-top:1px}
+div.sp-kpi-v{font-weight:700;font-size:.98rem;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+div.sp-kpi-s{color:#64748B;font-size:.68rem;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 div.sp-bar{height:5px;background:#E3E8EF;border-radius:3px;margin-top:5px}
 div.sp-bar>div{height:100%;background:#2F80ED;border-radius:3px}
 div.sp-section{font-weight:700;font-size:1.05rem;color:#0F2A43;
@@ -428,7 +433,12 @@ def _hero_background(path_str: str, mtime: float) -> str:
 
 
 def _inject_css() -> None:
-    st.markdown(_CSS, unsafe_allow_html=True)
+    page = st.session_state.get("nav_page", PAGES[0])
+    idx = PAGES.index(page) if page in PAGES else 0
+    active = ("<style>[data-testid='stSidebar'] .st-key-nav_%d button{"
+              "background:#EAF2FE !important;color:#2F80ED !important;"
+              "font-weight:700 !important}</style>" % idx)
+    st.markdown(_CSS + active, unsafe_allow_html=True)
 
 
 def _hero() -> None:
@@ -456,6 +466,14 @@ def _sidebar(assets: dict, run: dict | None) -> None:
         "<div class='sp-logo-tag'>Trust the data. Protect the people.</div>",
         unsafe_allow_html=True)
     sb.caption("Offline replay · real engine · simulated data")
+
+    if run is not None:
+        for i, page in enumerate(PAGES):
+            if sb.button(f"{NAV_ICONS[page]}  {page}", key=f"nav_{i}",
+                         width="stretch"):
+                st.session_state["nav_page"] = page
+                st.rerun()
+        sb.divider()
 
     options = sorted(assets["manifests"])
     idx = options.index(run["sid"]) if run and run["sid"] in options else 0
@@ -512,8 +530,6 @@ def _sidebar(assets: dict, run: dict | None) -> None:
              "officer acknowledge is a button you press. ON mirrors "
              "scripts/run_scenario.py.")
 
-    sb.divider()
-    sb.radio("Page", PAGES, key="nav_page", label_visibility="collapsed")
     sb.divider()
     if assets["settings"].policy.demo_auto_approve_tier1:
         sb.caption("Policy: tier-1 actions auto-approved in demo mode.")
