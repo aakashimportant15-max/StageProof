@@ -43,14 +43,24 @@ st.set_page_config(page_title="StageProof — offline demo",
 
 def _export_secrets_to_env() -> None:
     """Streamlit Cloud has no .env file: copy [secrets] entries into the
-    process environment so load_keys()/load_settings() find them (local runs
-    keep using .env; real environment variables are never overwritten)."""
+    process environment AND (if absent) write a .env, so load_settings() /
+    load_keys() find them whichever way they read config. Local runs keep
+    using the real .env; existing env vars / .env are never overwritten."""
     try:
-        for key, value in st.secrets.items():
-            if isinstance(value, (str, int, float)):
-                os.environ.setdefault(str(key), str(value))
+        items = {str(k): str(v) for k, v in st.secrets.items()
+                 if isinstance(v, (str, int, float))}
     except Exception:  # no secrets configured (local run) — fine
-        pass
+        return
+    for key, value in items.items():
+        os.environ.setdefault(key, value)
+    env_file = ROOT / ".env"
+    if items and not env_file.exists():
+        try:
+            env_file.write_text(
+                "".join(f"{k}={v}\n" for k, v in items.items()),
+                encoding="utf-8")
+        except OSError:
+            pass
 
 
 _export_secrets_to_env()
