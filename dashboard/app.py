@@ -370,6 +370,9 @@ _CSS = """
   justify-content:flex-start !important;border:none !important;
   background:transparent !important;color:#334155 !important;
   font-weight:600 !important;box-shadow:none !important}
+[data-testid="stSidebar"] [class*="st-key-nav_"] button div,
+[data-testid="stSidebar"] [class*="st-key-nav_"] button p{
+  width:100% !important;text-align:left !important}
 [data-testid="stSidebar"] [class*="st-key-nav_"] button:hover{
   background:#F1F5F9 !important}
 div[style*="border-radius:6px"]{border-radius:12px !important;
@@ -397,7 +400,7 @@ div.sp-kpi>div:last-child{min-width:0;flex:1}
 div.sp-ico{flex:0 0 36px;min-width:36px;height:36px;border-radius:50%;background:#EAF2FE;
   display:flex;align-items:center;justify-content:center;font-size:1.05rem}
 div.sp-kpi-t{color:#64748B;font-size:.7rem}
-div.sp-kpi-v{font-weight:700;font-size:.98rem;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+div.sp-kpi-v{font-weight:700;font-size:.98rem;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:break-word}
 div.sp-kpi-s{color:#64748B;font-size:.68rem;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 div.sp-bar{height:5px;background:#E3E8EF;border-radius:3px;margin-top:5px}
 div.sp-bar>div{height:100%;background:#2F80ED;border-radius:3px}
@@ -562,7 +565,7 @@ def _header(run: dict) -> None:
     records = run["records"]
     last = records[-1] if records else None
     n = len(run["stream"])
-    cols = st.columns([2.6, 1.6, 1.5, 1.8, 1.5, 1.5, 2.0])
+    cols = st.columns([2.3, 1.5, 1.5, 1.8, 1.4, 1.9, 2.0])
 
     state = ("finished" if run["finished"]
              else f"▶ {run['speed']}×" if run["playing"] else "❚❚ paused")
