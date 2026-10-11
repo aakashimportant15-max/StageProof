@@ -341,7 +341,7 @@ def main_chart(records: Sequence[Any], rain_prev_hr: Sequence[Optional[float]],
 
     fig.update_layout(
         height=680, barmode="overlay",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02,
+        legend=dict(orientation="h", yanchor="bottom", y=1.10,
                     xanchor="left", x=0, font=dict(size=11)),
         hovermode="x unified",
         **{**_PLOT_BG, "margin": dict(l=60, r=20, t=96, b=30)},
