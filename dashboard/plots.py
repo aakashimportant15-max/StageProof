@@ -340,11 +340,11 @@ def main_chart(records: Sequence[Any], rain_prev_hr: Sequence[Optional[float]],
                                       dash="dot"))
 
     fig.update_layout(
-        height=620, barmode="overlay",
+        height=680, barmode="overlay",
         legend=dict(orientation="h", yanchor="bottom", y=1.02,
                     xanchor="left", x=0, font=dict(size=11)),
         hovermode="x unified",
-        **_PLOT_BG,
+        **{**_PLOT_BG, "margin": dict(l=60, r=20, t=96, b=30)},
     )
     for r in range(1, 5):
         fig.update_xaxes(**_AXIS, row=r, col=1)
