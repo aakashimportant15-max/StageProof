@@ -94,3 +94,23 @@ def _load_reach_windowed(path: Path, manifests: dict) -> pd.DataFrame:
     on a loaded Windows session; each ScenarioStream slices its own window
     anyway, so this keeps the union of the scenario spans only. Identical
     columns, dtypes and UTC index as the whole-file read.
+    """
+    spans = _scenario_spans(manifests)
+    if not spans:
+        return pd.DataFrame()
+
+    parts = []
+    # Chunked read: the whole file is never held in memory at once.
+    for chunk in pd.read_csv(path, index_col=0, parse_dates=True,
+                             chunksize=50_000):
+        idx = pd.DatetimeIndex(chunk.index)
+        idx = idx.tz_localize("UTC") if idx.tz is None else idx.tz_convert("UTC")
+        chunk.index = idx
+
+        keep = pd.Series(False, index=chunk.index)
+        for lo, hi in spans:
+            keep |= (chunk.index >= lo) & (chunk.index <= hi)
+        if keep.any():
+            parts.append(chunk[keep.to_numpy()])
+
+    return pd.concat(parts) if parts else pd.DataFrame()
