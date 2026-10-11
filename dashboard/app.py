@@ -10,6 +10,7 @@ Run:  python -m streamlit run dashboard/app.py
 
 from __future__ import annotations
 
+import base64
 import os
 import sys
 from datetime import datetime, timezone
@@ -74,6 +75,9 @@ SCENARIO_LABELS = {
     "E": "E · Uncertain — upstream telemetry lost during a rise",
     "F": "F · Unsigned & replayed packets — transport attack",
 }
+
+PAGES = ["Live operations", "Incident & evidence", "Proof & audit"]
+WINDOW_OPTIONS = ["6H", "12H", "24H", "48H", "All"]
 
 SENSOR_COLORS = {
     "TRUSTED": plots.COLORS["normal"],
@@ -347,12 +351,110 @@ def _ctx(run: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# look & feel (CSS, hero banner) — presentation only
+# ---------------------------------------------------------------------------
+
+_CSS = """
+<style>
+.stApp{background:#F4F7FB}
+.block-container{padding-top:1.2rem;max-width:1500px}
+[data-testid="stSidebar"]{background:#fff;border-right:1px solid #E3E8EF}
+[data-testid="stSidebar"] .stButton>button{border-radius:10px;
+  border:1px solid #D5DEEA;font-weight:600}
+[data-testid="stSidebar"] [data-testid="stBaseButton-primary"],
+[data-testid="stSidebar"] button[kind="primary"]{
+  background:linear-gradient(180deg,#3B8CF5,#2F80ED);border:none;color:#fff}
+[data-testid="stSidebar"] div[role="radiogroup"]{gap:2px}
+[data-testid="stSidebar"] div[role="radiogroup"] label{padding:9px 12px;
+  border-radius:10px;width:100%;cursor:pointer}
+[data-testid="stSidebar"] div[role="radiogroup"] label>div:first-child{
+  display:none}
+[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked){
+  background:#EAF2FE;color:#2F80ED;font-weight:700}
+div[data-testid="stMetric"]{background:#fff;border:1px solid #E3E8EF;
+  border-radius:14px;padding:10px 14px;
+  box-shadow:0 1px 3px rgba(15,42,67,.06)}
+div[data-testid="stPlotlyChart"]{background:#fff;border:1px solid #E3E8EF;
+  border-radius:14px;padding:6px;box-shadow:0 1px 3px rgba(15,42,67,.06)}
+div[data-testid="stVerticalBlockBorderWrapper"]{border-radius:14px}
+div.sp-hero{position:relative;overflow:hidden;border-radius:18px;
+  padding:20px 28px 22px;color:#fff;margin-bottom:12px;min-height:118px}
+div.sp-hero h1{font-size:2rem;margin:.45rem 0 .1rem;padding:0;color:#fff}
+div.sp-hero p{margin:0;opacity:.93;font-size:1rem}
+div.sp-hero svg{position:absolute;left:0;bottom:0;width:100%;height:46px;
+  opacity:.22}
+span.sp-pill{display:inline-block;border:1px solid rgba(255,255,255,.75);
+  background:rgba(255,255,255,.18);border-radius:999px;padding:2px 11px;
+  font-size:.7rem;font-weight:700;letter-spacing:.06em}
+div.sp-kpi{display:flex;gap:10px;align-items:center;background:#fff;
+  border:1px solid #E3E8EF;border-radius:14px;padding:10px 12px;
+  min-height:78px;box-shadow:0 1px 3px rgba(15,42,67,.06)}
+div.sp-ico{flex:0 0 36px;height:36px;border-radius:50%;background:#EAF2FE;
+  display:flex;align-items:center;justify-content:center;font-size:1.05rem}
+div.sp-kpi-t{color:#64748B;font-size:.7rem}
+div.sp-kpi-v{font-weight:700;font-size:.98rem;line-height:1.2}
+div.sp-kpi-s{color:#64748B;font-size:.68rem;margin-top:1px}
+div.sp-bar{height:5px;background:#E3E8EF;border-radius:3px;margin-top:5px}
+div.sp-bar>div{height:100%;background:#2F80ED;border-radius:3px}
+div.sp-section{font-weight:700;font-size:1.05rem;color:#0F2A43;
+  margin:.6rem 0 .2rem}
+div.sp-section span{display:block;font-weight:400;font-size:.8rem;
+  color:#64748B}
+div.sp-logo-t{font-size:1.35rem;font-weight:800;color:#0F2A43}
+div.sp-logo-s{font-size:.62rem;letter-spacing:.12em;color:#2F80ED;
+  font-weight:700}
+div.sp-logo-tag{font-size:.74rem;color:#64748B;font-style:italic;
+  margin:2px 0 6px}
+div.sp-side-card{margin-top:14px;border-radius:14px;padding:18px 14px;
+  color:#fff;font-style:italic;font-weight:600;line-height:1.3;
+  background:linear-gradient(135deg,#0F4C81,#2F80ED 60%,#56CCF2)}
+</style>
+"""
+
+_WAVE_SVG = ("<svg viewBox='0 0 1200 60' preserveAspectRatio='none'>"
+             "<path d='M0 30 Q150 0 300 30 T600 30 T900 30 T1200 30 V60 H0Z' "
+             "fill='white'/></svg>")
+
+
+@st.cache_data(show_spinner=False)
+def _hero_background(path_str: str, mtime: float) -> str:
+    """CSS background: dashboard/assets/hero.jpg if present, else a gradient."""
+    path = Path(path_str)
+    if path.exists():
+        b64 = base64.b64encode(path.read_bytes()).decode()
+        return ("linear-gradient(90deg,rgba(15,42,67,.72),rgba(15,42,67,.15)),"
+                f"url(data:image/jpeg;base64,{b64}) center/cover")
+    return "linear-gradient(120deg,#0F4C81 0%,#2F80ED 55%,#56CCF2 100%)"
+
+
+def _inject_css() -> None:
+    st.markdown(_CSS, unsafe_allow_html=True)
+
+
+def _hero() -> None:
+    img = DASH / "assets" / "hero.jpg"
+    bg = _hero_background(str(img), img.stat().st_mtime if img.exists()
+                          else 0.0)
+    st.markdown(
+        f"<div class='sp-hero' style='background:{bg}'>"
+        "<span class='sp-pill'>SIMULATION MODE</span>"
+        "<h1>Real rivers. Safer communities.</h1>"
+        "<p>Physics and security checks for trustworthy river sensor data"
+        f"</p>{_WAVE_SVG}</div>", unsafe_allow_html=True)
+
+
+
+# ---------------------------------------------------------------------------
 # sidebar (full-rerun controls)
 # ---------------------------------------------------------------------------
 
 def _sidebar(assets: dict, run: dict | None) -> None:
     sb = st.sidebar
-    sb.markdown("### StageProof")
+    sb.markdown(
+        "<div class='sp-logo-t'>🌊 StageProof</div>"
+        "<div class='sp-logo-s'>RIVER SENSOR SAFETY LAYER</div>"
+        "<div class='sp-logo-tag'>Trust the data. Protect the people.</div>",
+        unsafe_allow_html=True)
     sb.caption("Offline replay · real engine · simulated data")
 
     options = sorted(assets["manifests"])
@@ -410,6 +512,9 @@ def _sidebar(assets: dict, run: dict | None) -> None:
              "officer acknowledge is a button you press. ON mirrors "
              "scripts/run_scenario.py.")
 
+    sb.divider()
+    sb.radio("Page", PAGES, key="nav_page", label_visibility="collapsed")
+    sb.divider()
     if assets["settings"].policy.demo_auto_approve_tier1:
         sb.caption("Policy: tier-1 actions auto-approved in demo mode.")
     sb.caption(f"Audit log: {run['audit_path'].name}")
@@ -422,54 +527,55 @@ def _sidebar(assets: dict, run: dict | None) -> None:
 # ---------------------------------------------------------------------------
 
 def _chip(col, title: str, value: str, color: str | None = None,
-          sub: str | None = None) -> None:
+          sub: str | None = None, icon: str = "",
+          progress: float | None = None) -> None:
     color = color or plots.COLORS["text"]
-    sub_html = (f"<div style='color:{plots.COLORS['muted']};"
-                f"font-size:0.68rem;margin-top:1px'>{sub}</div>"
-                if sub else "")
+    ico = f"<div class='sp-ico'>{icon}</div>" if icon else ""
+    sub_html = f"<div class='sp-kpi-s'>{sub}</div>" if sub else ""
+    bar = (f"<div class='sp-bar'><div style='width:"
+           f"{max(0.0, min(progress, 1.0)) * 100:.0f}%'></div></div>"
+           if progress is not None else "")
     col.markdown(
-        f"<div style='background:{plots.COLORS['panel']};"
-        f"border:1px solid {plots.COLORS['border']};border-radius:6px;"
-        f"padding:6px 10px;min-height:52px'>"
-        f"<div style='color:{plots.COLORS['muted']};font-size:0.66rem;"
-        f"text-transform:uppercase;letter-spacing:.05em'>{title}</div>"
-        f"<div style='color:{color};font-weight:600;font-size:0.88rem;"
-        f"line-height:1.25'>{value}</div>{sub_html}</div>",
-        unsafe_allow_html=True)
+        f"<div class='sp-kpi'>{ico}<div>"
+        f"<div class='sp-kpi-t'>{title}</div>"
+        f"<div class='sp-kpi-v' style='color:{color}'>{value}</div>"
+        f"{sub_html}{bar}</div></div>", unsafe_allow_html=True)
 
 
 def _header(run: dict) -> None:
     records = run["records"]
     last = records[-1] if records else None
     n = len(run["stream"])
-    cols = st.columns([2.4, 1.5, 1.4, 1.9, 1.5, 1.2, 1.9])
+    cols = st.columns([2.6, 1.6, 1.5, 1.8, 1.5, 1.5, 2.0])
 
     state = ("finished" if run["finished"]
              else f"▶ {run['speed']}×" if run["playing"] else "❚❚ paused")
     _chip(cols[0], "Scenario", SCENARIO_LABELS.get(run["sid"], run["sid"]),
-          sub=f"{run['manifest'].title} · {state}")
+          sub=f"{run['manifest'].title} · {state}", icon="🌊")
     clock = last.ts.strftime("%d %b %H:%M") if last is not None else "—"
-    _chip(cols[1], "Simulated clock (UTC)", clock)
+    _chip(cols[1], "Simulated clock (UTC)", clock, icon="🕒")
     _chip(cols[2], "Tick", f"{last.tick_idx + 1 if last else 0} / {n}",
-          sub=f"warm-up {run['manifest'].warmup_ticks} ticks")
+          sub=f"warm-up {run['manifest'].warmup_ticks} ticks", icon="🗄️",
+          progress=((last.tick_idx + 1) / n) if last and n else 0.0)
     v = last.verdict if last else None
     label = v.label.value if v else "—"
     _chip(cols[3], "Verdict",
           label + (f" · {v.subtype}" if v and v.subtype else ""),
-          color=plots.VERDICT_COLORS.get(label))
+          color=plots.VERDICT_COLORS.get(label), icon="🛡️")
     alert = last.alert_state.value if last else "—"
     _chip(cols[4], "Alert",
           alert + (f" · {last.alert_source}" if last and last.alert_source
-                   else ""))
+                   else ""), icon="🔔")
     stb = last.sensor_status.get("B") if last else None
     _chip(cols[5], "Sensor B",
           stb.state.value if stb else "—",
-          color=SENSOR_COLORS.get(stb.state.value) if stb else None)
+          color=SENSOR_COLORS.get(stb.state.value) if stb else None,
+          icon="📡")
     res = audit_verify(run["audit_path"])
     _chip(cols[6], "Audit chain",
           f"✓ verified · {res.n_events} events" if res.ok else "✗ BROKEN",
           color=plots.COLORS["normal"] if res.ok else plots.COLORS["attack"],
-          sub=run["audit_path"].name)
+          sub=run["audit_path"].name, icon="📄")
 
 
 # ---------------------------------------------------------------------------
@@ -480,6 +586,16 @@ def _delay(run: dict) -> float | None:
     if not run["playing"] or run["finished"]:
         return None
     return max(1.0 / float(run["speed"]), 0.05)
+
+
+def _window_control() -> None:
+    left, right = st.columns([3, 2])
+    left.markdown(
+        "<div class='sp-section'>River conditions over time"
+        "<span>Observed vs expected water levels and rainfall</span></div>",
+        unsafe_allow_html=True)
+    right.segmented_control("Chart window", WINDOW_OPTIONS, default="All",
+                            key="chart_window", label_visibility="collapsed")
 
 
 def render_stage() -> None:
@@ -493,14 +609,14 @@ def render_stage() -> None:
             return
     _header(run)
     ctx = _ctx(run)
-    t1, t2, t3 = st.tabs(["Live operations", "Incident & evidence",
-                          "Proof & audit"])
-    with t1:
-        live.render(ctx)
-    with t2:
+    page = st.session_state.get("nav_page", PAGES[0])
+    if page == PAGES[1]:
         evidence_view.render(ctx)
-    with t3:
+    elif page == PAGES[2]:
         proof.render(ctx)
+    else:
+        _window_control()
+        live.render(ctx)
 
 
 # ---------------------------------------------------------------------------
@@ -510,15 +626,14 @@ def render_stage() -> None:
 def _banner() -> None:
     st.markdown(
         f"""
-        <div style="border-left:4px solid {plots.COLORS['fault']};
-                    background:rgba(230,159,0,0.08);border-radius:6px;
-                    padding:10px 14px;margin-bottom:8px;">
-          <div style="color:{plots.COLORS['fault']};font-weight:700;
+        <div style="border:1px solid #F6D9A0;border-left:4px solid
+                    {plots.COLORS['fault']};background:#FFF7E8;
+                    border-radius:10px;padding:10px 14px;margin-bottom:10px;">
+          <div style="color:#B45309;font-weight:700;
                       font-size:0.85rem;letter-spacing:.05em;">
             SIMULATED DATA · OFFLINE DEMO — NOT AN OPERATIONAL WARNING SYSTEM
           </div>
-          <div style="color:{plots.COLORS['muted']};font-size:0.8rem;
-                      margin-top:4px;">
+          <div style="color:#6B5B3E;font-size:0.8rem;margin-top:4px;">
             Recorded river data replayed through the real StageProof engine
             with injected sensor faults and transport attacks. Alerts here are
             simulated messages to a fake phone simulator; nothing leaves this
@@ -531,25 +646,24 @@ def _banner() -> None:
 
 
 def _start_screen(assets: dict) -> None:
-    st.title("StageProof")
     st.markdown("**A cyber-physical integrity layer for flood early "
                 "warning** — offline replay demo of the full engine.")
     c1, c2, c3 = st.columns(3)
-    with c1:
+    with c1.container(border=True):
         st.markdown(
             "**What runs**\n\n"
             "Signed telemetry is replayed tick-by-tick through the real "
             "engine: transport checks → model expectations → evidence → "
             "verdict → response → hash-chained audit. Nothing is scripted "
             "in the UI.")
-    with c2:
+    with c2.container(border=True):
         st.markdown(
             "**Try these scenarios**\n\n"
             "- **C** fabricated flood (valid key, no support)\n"
             "- **D** suppressed flood (real flood hidden)\n"
             "- **F** unsigned & replayed packets\n\n"
             "Press Play, Step, or Jump to next event in the sidebar.")
-    with c3:
+    with c3.container(border=True):
         st.markdown(
             "**Safety posture**\n\n"
             "Unknown or unverifiable data can never produce a public "
@@ -563,8 +677,13 @@ def _start_screen(assets: dict) -> None:
 def main() -> None:
     assets = load_assets()
     run = st.session_state.get("run")
+    _inject_css()
+    _hero()
     _banner()
     _sidebar(assets, run)
+    st.sidebar.markdown(
+        "<div class='sp-side-card'>Cleaner rivers.<br>Safer communities."
+        "</div>", unsafe_allow_html=True)
     run = st.session_state.get("run")
     if run is None:
         _start_screen(assets)
