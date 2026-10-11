@@ -11,28 +11,29 @@ value (thresholds.context.band_z) and the rating is the one the engine used.
 from __future__ import annotations
 
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Optional, Sequence
 
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-# DESIGN §5.1 palette
+# DESIGN §5.1 palette (light theme; verdicts stay distinguishable by
+# line style / marker as well as colour — see VERDICT_DASH / VERDICT_SYMBOL)
 COLORS = {
-    "bg": "#0E1117",
-    "panel": "#161B22",
-    "border": "#2A313C",
-    "text": "#E6EDF3",
-    "muted": "#8B98A5",
-    "observed": "#E6EDF3",
-    "expected": "#56B4E9",
-    "estimate": "#C9D1D9",
-    "quarantine": "#6E7681",
-    "real": "#56B4E9",
-    "fault": "#E69F00",
-    "attack": "#FF5C5C",
-    "uncertain": "#CC79A7",
-    "normal": "#009E73",
+    "bg": "#F4F7FB",
+    "panel": "#FFFFFF",
+    "border": "#E3E8EF",
+    "text": "#0F2A43",
+    "muted": "#64748B",
+    "observed": "#0F2A43",
+    "expected": "#2F80ED",
+    "estimate": "#475569",
+    "quarantine": "#94A3B8",
+    "real": "#2F80ED",
+    "fault": "#D97706",
+    "attack": "#DC2626",
+    "uncertain": "#9333EA",
+    "normal": "#059669",
 }
 
 VERDICT_COLORS = {
@@ -57,10 +58,11 @@ VERDICT_SYMBOL = {
 }
 
 _PLOT_BG = dict(
-    paper_bgcolor=COLORS["bg"],
+    paper_bgcolor=COLORS["panel"],
     plot_bgcolor=COLORS["panel"],
     font=dict(color=COLORS["text"], size=12),
     margin=dict(l=60, r=20, t=30, b=30),
+    hoverlabel=dict(bgcolor="#FFFFFF", font=dict(color=COLORS["text"])),
 )
 _AXIS = dict(
     gridcolor=COLORS["border"],
@@ -68,6 +70,19 @@ _AXIS = dict(
     linecolor=COLORS["border"],
     tickfont=dict(color=COLORS["muted"]),
 )
+
+
+_WINDOW_HOURS = {"6H": 6, "12H": 12, "24H": 24, "48H": 48}
+
+
+def _chart_window_hours() -> Optional[int]:
+    """Hours to show, chosen with the dashboard's range control (None = all).
+    Display only: it changes the visible x-range, never the data."""
+    try:
+        import streamlit as st
+        return _WINDOW_HOURS.get(st.session_state.get("chart_window"))
+    except Exception:
+        return None
 
 
 def expected_band(bundle: Any, role: str, logq_pred: Optional[float],
@@ -154,11 +169,14 @@ def main_chart(records: Sequence[Any], rain_prev_hr: Sequence[Optional[float]],
             "④ Downstream C (observed · expected)",
         ),
     )
+    for ann in fig.layout.annotations:  # panel titles: left-aligned
+        ann.update(x=0.0, xanchor="left",
+                   font=dict(size=13, color=COLORS["text"]))
 
     # ① rainfall
     fig.add_trace(go.Bar(
         x=xs, y=list(rain_prev_hr), name="Rainfall",
-        marker_color="rgba(86,180,233,0.55)", hoverinfo="x+y"
+        marker_color="rgba(47,128,237,0.55)", hoverinfo="x+y"
     ), row=1, col=1)
 
     # ② upstream A and T
@@ -185,7 +203,7 @@ def main_chart(records: Sequence[Any], rain_prev_hr: Sequence[Optional[float]],
 
     for x0, x1 in quarantine_spans(records, "B"):
         fig.add_vrect(x0=x0, x1=x1, row=3, col=1, layer="below",
-                      fillcolor="rgba(110,118,129,0.25)",
+                      fillcolor="rgba(100,116,139,0.18)",
                       line_width=0)
 
     obs_b = _stage_series(records, "B")
@@ -229,7 +247,7 @@ def main_chart(records: Sequence[Any], rain_prev_hr: Sequence[Optional[float]],
     fig.add_trace(go.Scatter(
         x=xs, y=exp_lo, mode="lines", name="EXPECTED from upstream + rain",
         line=dict(width=0), fill="tonexty",
-        fillcolor="rgba(86,180,233,0.25)", hoverinfo="skip"),
+        fillcolor="rgba(47,128,237,0.15)", hoverinfo="skip"),
         row=3, col=1)
     fig.add_trace(go.Scatter(
         x=xs, y=exp_y, mode="lines", name="expected (stored)",
@@ -254,7 +272,7 @@ def main_chart(records: Sequence[Any], rain_prev_hr: Sequence[Optional[float]],
     fig.add_trace(go.Scatter(
         x=xs, y=est_lo, mode="lines", name="estimate interval",
         line=dict(width=0), fill="tonexty",
-        fillcolor="rgba(201,209,217,0.18)", hoverinfo="skip"),
+        fillcolor="rgba(71,85,105,0.14)", hoverinfo="skip"),
         row=3, col=1)
     fig.add_trace(go.Scatter(
         x=xs, y=est_y, mode="lines", name="ESTIMATED — B quarantined",
@@ -331,6 +349,9 @@ def main_chart(records: Sequence[Any], rain_prev_hr: Sequence[Optional[float]],
     for r in range(1, 5):
         fig.update_xaxes(**_AXIS, row=r, col=1)
         fig.update_yaxes(**_AXIS, row=r, col=1)
+    hours = _chart_window_hours()
+    if hours and len(xs) > 1:
+        fig.update_xaxes(range=[xs[-1] - timedelta(hours=hours), xs[-1]])
     fig.update_yaxes(title_text="mm", row=1, col=1)
     fig.update_yaxes(title_text="ft", row=2, col=1)
     fig.update_yaxes(title_text="ft", row=3, col=1)
