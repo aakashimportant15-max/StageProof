@@ -352,7 +352,7 @@ def main_chart(records: Sequence[Any], rain_prev_hr: Sequence[Optional[float]],
     hours = _chart_window_hours()
     if hours and len(xs) > 1:
         fig.update_xaxes(range=[xs[-1] - timedelta(hours=hours), xs[-1]])
-    fig.update_yaxes(title_text="mm", row=1, col=1)
+    fig.update_yaxes(title_text="mm", rangemode="nonnegative", row=1, col=1)
     fig.update_yaxes(title_text="ft", row=2, col=1)
     fig.update_yaxes(title_text="ft", row=3, col=1)
     fig.update_yaxes(title_text="ft", row=4, col=1)
