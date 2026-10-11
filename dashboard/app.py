@@ -40,6 +40,21 @@ from stageproof.sim.scenarios import ScenarioStream, load_manifest  # noqa: E402
 st.set_page_config(page_title="StageProof — offline demo",
                    page_icon="🌊", layout="wide")
 
+
+def _export_secrets_to_env() -> None:
+    """Streamlit Cloud has no .env file: copy [secrets] entries into the
+    process environment so load_keys()/load_settings() find them (local runs
+    keep using .env; real environment variables are never overwritten)."""
+    try:
+        for key, value in st.secrets.items():
+            if isinstance(value, (str, int, float)):
+                os.environ.setdefault(str(key), str(value))
+    except Exception:  # no secrets configured (local run) — fine
+        pass
+
+
+_export_secrets_to_env()
+
 SCENARIO_LABELS = {
     "A": "A · Real flood — everything agrees",
     "B": "B · Sensor fault — gauge B gets stuck",
