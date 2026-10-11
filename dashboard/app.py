@@ -370,9 +370,13 @@ _CSS = """
   justify-content:flex-start !important;border:none !important;
   background:transparent !important;color:#334155 !important;
   font-weight:600 !important;box-shadow:none !important}
-[data-testid="stSidebar"] [class*="st-key-nav_"] button div,
+[data-testid="stSidebar"] [class*="st-key-nav_"] button{
+  text-align:left !important}
+[data-testid="stSidebar"] [class*="st-key-nav_"] button > *{
+  display:flex !important;width:100% !important;margin:0 !important;
+  justify-content:flex-start !important;text-align:left !important}
 [data-testid="stSidebar"] [class*="st-key-nav_"] button p{
-  width:100% !important;text-align:left !important}
+  margin:0 !important;width:auto !important;text-align:left !important}
 [data-testid="stSidebar"] [class*="st-key-nav_"] button:hover{
   background:#F1F5F9 !important}
 div[style*="border-radius:6px"]{border-radius:12px !important;
